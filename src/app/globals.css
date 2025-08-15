@@ -1,5 +1,8 @@
 @import "tailwindcss";
-@plugin "daisyui";
+
+@plugin "daisyui" {
+  themes: all;
+}
 
 :root {
   --background: #ffffff;
@@ -28,19 +31,69 @@ body {
 
 
 ::-webkit-scrollbar {
-  width: 8px; /* 自定义滚动条宽度 */
-  height: 8px; /* 自定义滚动条高度 */
+  width: 8px;
+  /* 自定义滚动条宽度 */
+  height: 8px;
+  /* 自定义滚动条高度 */
 }
 
 ::-webkit-scrollbar-track {
-  background-color: transparent; /* 滚动条轨道背景色，这里设为透明 */
+  background-color: transparent;
+  /* 滚动条轨道背景色，这里设为透明 */
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #ccc; /* 滚动条滑块颜色 */
-  border-radius: 4px; /* 设置圆角，让滚动条更圆润，可根据需求调整数值 */
+  background-color: #ccc;
+  /* 滚动条滑块颜色 */
+  border-radius: 4px;
+  /* 设置圆角，让滚动条更圆润，可根据需求调整数值 */
 }
 
 ::-webkit-scrollbar-button {
-  display: none; /* 隐藏滚动条的上下箭头按钮 */
+  display: none;
+  /* 隐藏滚动条的上下箭头按钮 */
+}
+
+.fulltitlebar {
+  height: 100vh;
+  background: transparent;
+  user-select: none;
+  display: grid;
+  grid-template-columns: auto max-content;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.titlebar {
+  height: 300px;
+  background: #329ea3;
+  user-select: none;
+  display: grid;
+  grid-template-columns: auto max-content;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.titlebar>.controls {
+  display: flex;
+}
+
+.titlebar button {
+  appearance: none;
+  padding: 0;
+  margin: 0;
+  border: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  background-color: transparent;
+}
+
+.titlebar button:hover {
+  background: #5bbec3;
 }
