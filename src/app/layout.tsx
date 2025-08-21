@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { I18nProvider } from "./utils/providers/I18nProvider";
-import { ThemeProvider } from "./utils/providers/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "Truss Web Framework",
+  title: "Truss tauri Framework",
   description: "Truss Web Framework Project",
 };
 
@@ -14,11 +13,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="light">
+    <html lang="en">
       <body className={`antialiased`}>
-        <I18nProvider>
-          <ThemeProvider>{children}</ThemeProvider>
-        </I18nProvider>
+        <I18nProvider>{children}</I18nProvider>
       </body>
     </html>
   );

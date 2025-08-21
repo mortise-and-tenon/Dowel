@@ -6,6 +6,7 @@
 - [react-icons](https://react-icons.github.io/react-icons/)
 - [next-intl](https://github.com/amannn/next-intl)
 - [js-cookie](https://github.com/js-cookie/js-cookie)
+- [theme-change](https://github.com/saadeghi/theme-change)
 
 # 运行、编译环境
 

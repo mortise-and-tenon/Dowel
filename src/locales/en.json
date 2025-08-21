@@ -3,6 +3,8 @@
     "zh": "中文",
     "en": "English"
   },
+  "app_name": "Dowel",
+  "app_desc": "A concise and efficient AI application platform",
   "corp_name": "Truss Web",
   "copyright": "Copyright"
 }

@@ -3,6 +3,8 @@
     "zh": "中文",
     "en": "English"
   },
+  "app_name": "导维",
+  "app_desc": "简洁高效的 AI 应用平台",
   "corp_name": "Truss Web",
   "copyright": "版权所有"
 }

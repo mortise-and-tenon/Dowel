@@ -95,6 +95,7 @@ export const I18nProvider = ({ children }: { children: React.ReactNode }) => {
   const loadI18nData = async () => {
     const jsonModule = await import(`../../../locales/${locale}.json`);
     setTranslation(jsonModule);
+    return jsonModule;
   };
 
   useEffect(() => {
