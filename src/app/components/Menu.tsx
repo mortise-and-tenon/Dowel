@@ -2,14 +2,18 @@
 
 import { useRouter } from "next/navigation";
 import { ReactNode, useContext, useState } from "react";
-import { MdOutlineSettings } from "react-icons/md";
+import {
+  MdOutlineSettings,
+  MdOutlineHome,
+  MdOutlineTranslate,
+} from "react-icons/md";
 import { I18nContext } from "../utils/providers/I18nProvider";
 import React from "react";
 
 /**
  * 菜单定义
  */
-export type MenuData = {
+type MenuData = {
   /**
    * 菜单名称，用于区分菜单
    */
@@ -32,6 +36,24 @@ export type MenuData = {
 };
 
 /**
+ * 菜单配置
+ */
+const menuDatas: MenuData[] = [
+  {
+    name: "home",
+    icon: <MdOutlineHome className="text-2xl" />,
+    i18nName: "menu.home",
+    link: "/home",
+  },
+  {
+    name: "translation",
+    icon: <MdOutlineTranslate className="text-2xl" />,
+    i18nName: "menu.translation",
+    link: "/translation",
+  },
+];
+
+/**
  * 固定的扩展菜单配置，如设置
  */
 const extraMenuDatas: MenuData[] = [
@@ -43,13 +65,14 @@ const extraMenuDatas: MenuData[] = [
   },
 ];
 
+/**
+ * 菜单组件
+ * @param param0
+ * @returns
+ */
 export default function Menu({
-  menudata,
-  deFaultFocus,
   onChange,
 }: {
-  menudata: MenuData[];
-  deFaultFocus: string;
   onChange: (i18nName: string) => void;
 }) {
   const router = useRouter();
@@ -59,7 +82,7 @@ export default function Menu({
   /**
    * 选中的菜单
    */
-  const [focusMenu, setFocusMenu] = useState(deFaultFocus);
+  const [focusMenu, setFocusMenu] = useState("home");
 
   /**
    * 选中的扩展菜单
@@ -97,9 +120,12 @@ export default function Menu({
   };
 
   return (
-    <div className="bg-base-200 flex flex-col justify-between">
+    <div
+      data-tauri-drag-region
+      className="bg-base-200 flex flex-col justify-between"
+    >
       <ul className="menu menu-xs">
-        {menudata.map((item) => (
+        {menuDatas.map((item) => (
           <li
             onClick={() => onMenuSelected(item.name, item.i18nName, item.link)}
             key={item.name}

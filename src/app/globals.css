@@ -54,6 +54,18 @@
   /* 隐藏滚动条的上下箭头按钮 */
 }
 
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari and Opera */
+}
+
 .fulltitlebar {
   height: 100vh;
   background: transparent;

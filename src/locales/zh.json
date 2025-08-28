@@ -11,5 +11,11 @@
     "home": "首页",
     "translation": "翻译",
     "setting": "设置"
+  },
+  "setting": {
+    "translation": "翻译设置",
+    "voice": "语音设置",
+    "general": "通用设置",
+    "about": "关于我们"
   }
 }

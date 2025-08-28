@@ -1,41 +1,49 @@
 "use client";
 import { getCurrentWindow, Window } from "@tauri-apps/api/window";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import {
-  MdOutlineHome,
-  MdOutlineTranslate,
-  MdOutlineSettings,
-} from "react-icons/md";
+import { useContext, useEffect, useState } from "react";
 import {
   VscChromeClose,
   VscChromeMaximize,
   VscChromeMinimize,
   VscChromeRestore,
 } from "react-icons/vsc";
-import Menu, { MenuData } from "../components/Menu";
+import Menu from "../components/Menu";
 import ThemeChanger from "../components/ThemeSwitcher";
-import { useContext } from "react";
 import { I18nContext } from "../utils/providers/I18nProvider";
+import "../globals.css";
 
 export default function HomeLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  /**
+   * 窗体实例
+   */
   const [appWindow, setAppWindow] = useState<Window | null>(null);
+
+  /**
+   * 窗体最大化标识
+   */
   const [isMaximized, setIsMaximized] = useState(false);
   useEffect(() => {
     const appWindow = getCurrentWindow();
     setAppWindow(appWindow);
   }, []);
 
+  /**
+   * 点击最小化
+   */
   const onClickMinimize = () => {
     if (appWindow != null) {
       appWindow.minimize();
     }
   };
 
+  /**
+   * 点击最大化/恢复
+   */
   const onClickMaxmize = async () => {
     if (appWindow != null) {
       await appWindow.toggleMaximize();
@@ -44,6 +52,9 @@ export default function HomeLayout({
     }
   };
 
+  /**
+   * 点击关闭
+   */
   const onClickClose = () => {
     if (appWindow != null) {
       appWindow.close();
@@ -57,29 +68,15 @@ export default function HomeLayout({
    */
   const [menuTitle, setMenuTitle] = useState("menu.home");
 
+  /**
+   * 选中菜单后调整标题栏菜单名称
+   * @param i18nName
+   */
   const onChangeTitle = (i18nName: string) => {
     if (i18nName != "") {
       setMenuTitle(i18nName);
     }
   };
-
-  /**
-   * 菜单配置
-   */
-  const menuDatas: MenuData[] = [
-    {
-      name: "home",
-      icon: <MdOutlineHome className="text-2xl" />,
-      i18nName: "menu.home",
-      link: "/home",
-    },
-    {
-      name: "translation",
-      icon: <MdOutlineTranslate className="text-2xl" />,
-      i18nName: "menu.translation",
-      link: "/translation",
-    },
-  ];
 
   return (
     <div className="flex flex-col h-screen">
@@ -87,9 +84,9 @@ export default function HomeLayout({
         data-tauri-drag-region
         className="h-12 flex justify-between items-center bg-base-200"
       >
-        <div className="flex ">
-          <div className="w-14 flex justify-center">
-            <Image src="/truss.png" width={20} height={20} alt="logo" />
+        <div className="flex items-center">
+          <div className="w-14 flex justify-center items-center">
+            <Image src="/truss.png" width={30} height={30} alt="logo" />
           </div>
           <span className="font-black">{i18n(menuTitle)}</span>
         </div>
@@ -125,15 +122,12 @@ export default function HomeLayout({
           </button>
         </div>
       </div>
-      <div className="flex-1 flex">
-        <div data-tauri-drag-region className="flex">
-          <Menu
-            menudata={menuDatas}
-            deFaultFocus="home"
-            onChange={onChangeTitle}
-          />
+      <div className="flex-1 flex overflow-hidden">
+        <Menu onChange={onChangeTitle} />
+
+        <div className="flex-1 bg-base-300 border-1 border-base-300">
+          {children}
         </div>
-        <div className="flex-1 rounded-box">{children}</div>
       </div>
     </div>
   );

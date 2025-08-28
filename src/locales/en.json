@@ -11,5 +11,11 @@
     "home": "Home",
     "translation": "Translation",
     "setting": "Setting"
+  },
+  "setting": {
+    "translation": "Translation Settings",
+    "voice": "Voice Settings",
+    "general": "Generatl Settings",
+    "about": "About Us"
   }
 }
