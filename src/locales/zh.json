@@ -3,7 +3,7 @@
     "zh": "中文",
     "en": "English"
   },
-  "app_name": "导维",
+  "app_name": "道沃",
   "app_desc": "简洁高效的 AI 应用平台",
   "corp_name": "Truss Web",
   "copyright": "版权所有",
@@ -15,7 +15,35 @@
   "setting": {
     "translation": "翻译设置",
     "voice": "语音设置",
+    "ai": "AI 设置",
     "general": "通用设置",
-    "about": "关于我们"
+    "about": "关于我们",
+    "check_update": "检查更新",
+    "log": "更新日志",
+    "view": "查看",
+    "details": "详情",
+    "website": "官方网站",
+    "feedback": "问题反馈",
+    "feedback_action": "反馈"
+  },
+  "general": {
+    "appearance": "外观",
+    "theme": "主题",
+    "language": "语言"
+  },
+  "themes": {
+    "theme": "主题",
+    "light": "浅色",
+    "cupcake": "纸杯蛋糕",
+    "emerald": "祖母绿",
+    "valentine": "浪漫",
+    "lofi": "黑白",
+    "pastel": "粉彩",
+    "dark": "深色",
+    "forest": "森林",
+    "dracula": "德古拉",
+    "night": "夜晚",
+    "coffee": "咖啡",
+    "dim": "昏暗"
   }
 }

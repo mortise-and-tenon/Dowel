@@ -15,7 +15,7 @@
       "identifier": "fs:allow-app-read-recursive",
       "allow": [
         {
-          "path": "$HOME/truss.json"
+          "path": "$HOME/dowel.json"
         }
       ]
     },
@@ -23,7 +23,7 @@
       "identifier": "fs:allow-write-text-file",
       "allow": [
         {
-          "path": "$HOME/truss.json"
+          "path": "$HOME/dowel.json"
         }
       ]
     },

@@ -25,8 +25,6 @@ import {
   useState,
 } from "react";
 
-import Cookies from "js-cookie";
-
 type I18nContextType = {
   locale: string;
   setLocale: Dispatch<SetStateAction<string>>;

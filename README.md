@@ -7,6 +7,7 @@
 - [next-intl](https://github.com/amannn/next-intl)
 - [js-cookie](https://github.com/js-cookie/js-cookie)
 - [theme-change](https://github.com/saadeghi/theme-change)
+- [crypto-js](https://github.com/brix/crypto-js)
 
 # 运行、编译环境
 

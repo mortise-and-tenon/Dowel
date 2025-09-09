@@ -15,7 +15,35 @@
   "setting": {
     "translation": "Translation Settings",
     "voice": "Voice Settings",
+    "ai": "AI Settings",
     "general": "Generatl Settings",
-    "about": "About Us"
+    "about": "About Us",
+    "check_update": "Check for Updates",
+    "log": "Release Notes",
+    "view": "View",
+    "details": "Detail",
+    "website": "Official Website",
+    "feedback": "Feedback",
+    "feedback_action": "Feedback"
+  },
+  "general": {
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "language": "Language"
+  },
+  "themes": {
+    "theme": "主题",
+    "light": "Light",
+    "cupcake": "Cupcake",
+    "emerald": "Emerald",
+    "valentine": "Valentine",
+    "lofi": "Lofi",
+    "pastel": "Pastel",
+    "dark": "Dark",
+    "forest": "Forest",
+    "dracula": "Dracula",
+    "night": "Night",
+    "coffee": "Coffee",
+    "dim": "Dim"
   }
 }

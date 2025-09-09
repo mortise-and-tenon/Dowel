@@ -32,12 +32,17 @@ const menuDatas: SettingMenuData[] = [
     i18nName: "setting.voice",
   },
   {
+    name: "ai",
+    icon: <MdOutlineSettings className="text-xl" />,
+    i18nName: "setting.ai",
+  },
+  {
     name: "general",
     icon: <MdOutlineSettings className="text-xl" />,
     i18nName: "setting.general",
   },
   {
-    name: "setting",
+    name: "about",
     icon: <MdOutlineInfo className="text-xl" />,
     i18nName: "setting.about",
   },
@@ -46,7 +51,11 @@ const menuDatas: SettingMenuData[] = [
 /**
  * 设置页面子菜单
  */
-export default function SettingMenu() {
+export default function SettingMenu({
+  onSelectMenu,
+}: {
+  onSelectMenu: (menuName: string) => void;
+}) {
   const { i18n } = useContext(I18nContext);
   const [focusMenu, setFocusMenu] = useState("translation");
 
@@ -56,6 +65,7 @@ export default function SettingMenu() {
    */
   const onClickMenu = (name: string) => {
     setFocusMenu(name);
+    onSelectMenu(name);
   };
 
   return (

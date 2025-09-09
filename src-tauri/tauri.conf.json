@@ -12,9 +12,11 @@
     "windows": [
       {
         "decorations": false,
-        "title": "Truss",
-        "width": 800,
-        "height": 600,
+        "title": "Dowel",
+        "width": 1024,
+        "height": 640,
+        "minWidth": 1024,
+        "minHeight": 640,
         "resizable": true,
         "fullscreen": false
       }
