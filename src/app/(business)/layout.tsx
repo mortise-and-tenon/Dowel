@@ -122,7 +122,7 @@ export default function HomeLayout({
           </button>
         </div>
       </div>
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden" id="parent-container">
         <Menu onChange={onChangeTitle} />
 
         <div className="flex-1 bg-base-300 border-1 border-base-300">

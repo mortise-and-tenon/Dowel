@@ -23,13 +23,24 @@ export const decrypt = (ciphertext: string): string => {
 
 export type AppData = {};
 
+export type ProviderData = {
+  name: string;
+  api: string;
+  key: string;
+  on: boolean;
+};
+
 export type ConfigFile = {
   app: AppData;
+  providers: ProviderData[];
 };
 
 export interface PlatformAdapter {
   readConfigData(): Promise<ConfigFile>;
   writeAppData(appData: AppData): void;
+  readAppData(): Promise<AppData>;
+  writeProviderData(modelData: ProviderData): void;
+  readProviders(): Promise<ProviderData[]>;
 }
 
 export class TauriAdapter implements PlatformAdapter {
@@ -38,7 +49,7 @@ export class TauriAdapter implements PlatformAdapter {
       baseDir: BaseDirectory.Home,
     });
     if (!fileExists) {
-      return [];
+      return {};
     }
 
     const jsonContent = await readTextFile(CONFIG_FILE_NAME, {
@@ -60,5 +71,64 @@ export class TauriAdapter implements PlatformAdapter {
         baseDir: BaseDirectory.Home,
       }
     );
+  };
+
+  readAppData = async () => {
+    const fileExists = await exists(CONFIG_FILE_NAME, {
+      baseDir: BaseDirectory.Home,
+    });
+    if (!fileExists) {
+      return {};
+    }
+
+    const jsonContent = await readTextFile(CONFIG_FILE_NAME, {
+      baseDir: BaseDirectory.Home,
+    });
+
+    return JSON.parse(jsonContent).app;
+  };
+
+  writeProviderData = async (modelData: ProviderData) => {
+    const jsonContent: ConfigFile = await this.readConfigData();
+
+    console.log(jsonContent);
+    // 查找是否存在同名模型
+    const existingIndex = jsonContent.hasOwnProperty("providers")
+      ? jsonContent.providers.findIndex((item) => item.name === modelData.name)
+      : -2;
+
+    if (existingIndex > -1) {
+      // 存在同名供应商，替换原有数据
+      jsonContent.providers[existingIndex] = modelData;
+    } else {
+      // 不存在同名模型，添加新供应商
+      if (jsonContent.providers == null || jsonContent.providers == undefined) {
+        jsonContent.providers = [];
+      }
+      jsonContent.providers.push(modelData);
+    }
+
+    await writeTextFile(
+      CONFIG_FILE_NAME,
+      JSON.stringify(jsonContent, null, 2),
+      {
+        baseDir: BaseDirectory.Home,
+      }
+    );
+  };
+
+  readProviders = async () => {
+    const fileExists = await exists(CONFIG_FILE_NAME, {
+      baseDir: BaseDirectory.Home,
+    });
+    if (!fileExists) {
+      return [];
+    }
+
+    const jsonContent = await readTextFile(CONFIG_FILE_NAME, {
+      baseDir: BaseDirectory.Home,
+    });
+
+    return JSON.parse(jsonContent).providers;
   };
 }
