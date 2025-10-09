@@ -1,37 +1,13 @@
 "use client";
 
-import { I18nContext } from "@/app/utils/providers/I18nProvider";
-import { ProviderData, PlatformAdapter, TauriAdapter } from "@/app/utils/utils";
-import { useEffect } from "react";
-import { useContext } from "react";
-import { useState } from "react";
-import { ReactNode } from "react";
-import {
-  MdAdd,
-  MdOutlineSearch,
-  MdToggleOff,
-  MdToggleOn,
-} from "react-icons/md";
-import ContainerModal from "../ContainerModal";
-import { useRef } from "react";
-import { RiRefreshLine, RiToggleFill } from "react-icons/ri";
-import { IoMdCheckmarkCircle, IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { AiUtils } from "@/app/utils/aiUtils";
+import { I18nContext } from "@/app/utils/providers/I18nProvider";
+import { PlatformAdapter, ProviderData, TauriAdapter } from "@/app/utils/utils";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { FaTimesCircle } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
-import { use } from "react";
-
-/**
- * 模型信息定义
- */
-type AiModelData = {
-  name: string;
-  icon: ReactNode;
-  i18nName: string;
-  api: string;
-  key: string;
-  on: boolean;
-};
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import { MdAdd, MdOutlineSearch, MdToggleOn } from "react-icons/md";
 
 export default function Ai() {
   const { i18n } = useContext(I18nContext);
@@ -65,6 +41,11 @@ export default function Ai() {
    * 是否展示添加供应商对话框
    */
   const [showModal, setShowModal] = useState(false);
+
+  /**
+   * 添加供应商时的提示信息
+   */
+  const [displayMsg, setDisplayMsg] = useState("");
 
   /**
    * 添加供应商对话框确定按钮，是否可用
@@ -182,6 +163,13 @@ export default function Ai() {
    */
   const onAddProvider = async () => {
     if (newProviderName != null && newProviderName != "") {
+      const exists = providers.findIndex(
+        (item) => item.name === newProviderName
+      );
+      if (exists > -1) {
+        setDisplayMsg("ai.name_duplicated");
+        return;
+      }
       try {
         await adapter.writeProviderData({
           name: newProviderName,
@@ -203,6 +191,7 @@ export default function Ai() {
   const onInputProviderName = (e: any) => {
     setEnabledAdd(e.target.value != "");
     setNewProviderName(e.target.value);
+    setDisplayMsg("");
   };
 
   /**
@@ -309,7 +298,7 @@ export default function Ai() {
           <input
             type="search"
             className="grow"
-            placeholder="搜索供应商"
+            placeholder={i18n("ai.search_provider")}
             onChange={onSearchProvider}
           />
           <MdOutlineSearch className="text-2xl" />
@@ -341,54 +330,44 @@ export default function Ai() {
         </div>
         <button className="btn mb-2" onClick={onShowModal}>
           <MdAdd className="text-2xl" />
-          添加供应商
+          {i18n("ai.add_provider")}
         </button>
         <dialog
           id="addModal"
           className={`modal ${showModal ? "modal-open" : ""} `}
         >
           <div className="modal-box">
-            <div role="alert" className="alert alert-error">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 shrink-0 stroke-current"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>Error! Task failed successfully.</span>
-            </div>
-            <h3 className="font-bold text-lg">添加供应商</h3>
+            <h3 className="font-bold text-lg">{i18n("ai.add_provider")}</h3>
             <div className="py-4">
               <form method="dialog">
                 <fieldset className="fieldset">
-                  <legend className="fieldset-legend">名称</legend>
+                  <legend className="fieldset-legend">{i18n("ai.name")}</legend>
                   <input
                     ref={inputRef}
                     type="text"
                     className="input w-full"
-                    placeholder="输入供应商名称"
+                    placeholder={i18n("ai.name_placeholder")}
                     value={newProviderName}
                     onChange={onInputProviderName}
                   />
                 </fieldset>
+                {displayMsg && (
+                  <div role="alert" className="alert alert-error">
+                    <FaTimesCircle className="text-2xl" />
+                    <span>{i18n(displayMsg)}</span>
+                  </div>
+                )}
               </form>
             </div>
             <div className="modal-action">
               <button className="btn" onClick={onHideModal}>
-                取消
+                {i18n("common.cancel")}
               </button>
               <button
                 className={`btn btn-primary ${enableAdd ? "" : "btn-disabled"}`}
                 onClick={onAddProvider}
               >
-                确定
+                {i18n("common.confirm")}
               </button>
             </div>
           </div>
@@ -406,7 +385,7 @@ export default function Ai() {
         </div>
         <hr className="border-base-300" />
         <fieldset className="fieldset">
-          <legend className="fieldset-legend">API 地址</legend>
+          <legend className="fieldset-legend">{i18n("ai.api")}</legend>
           <input
             type="url"
             ref={apiInputRef}
@@ -414,12 +393,12 @@ export default function Ai() {
             value={newApi}
             required
             onChange={onChangeApi}
-            placeholder="API 地址"
+            placeholder={i18n("ai.api")}
           />
           <p className="label">/v1/chat/completions</p>
         </fieldset>
         <fieldset className="fieldset">
-          <legend className="fieldset-legend">API 密钥</legend>
+          <legend className="fieldset-legend">{i18n("ai.key")}</legend>
           <div className="join">
             <input
               type={hideKey ? "password" : "text"}
@@ -427,7 +406,7 @@ export default function Ai() {
               value={newKey}
               required
               onChange={onChangeKey}
-              placeholder="API 密钥"
+              placeholder={i18n("ai.key")}
             />
             <button className="btn" onClick={onShowOrHideKey}>
               {hideKey ? <IoMdEyeOff /> : <IoMdEye />}
@@ -457,7 +436,7 @@ export default function Ai() {
             }`}
             onClick={onCheckProvider}
           >
-            检测
+            {i18n("ai.test")}
           </button>
           <button
             className={`btn btn-primary ${
@@ -466,7 +445,7 @@ export default function Ai() {
             }`}
             onClick={onSaveProvider}
           >
-            保存
+            {i18n("common.save")}
           </button>
         </div>
       </div>

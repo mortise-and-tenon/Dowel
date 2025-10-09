@@ -12,6 +12,11 @@
     "translation": "Translation",
     "setting": "Setting"
   },
+  "common": {
+    "confirm": "Ok",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
   "setting": {
     "translation": "Translation Settings",
     "voice": "Voice Settings",
@@ -25,6 +30,16 @@
     "website": "Official Website",
     "feedback": "Feedback",
     "feedback_action": "Feedback"
+  },
+  "ai": {
+    "search_provider": "Search Provider",
+    "add_provider": "Add Provider",
+    "name": "Name",
+    "name_placeholder": "Enter Provider Name",
+    "api": "API Address",
+    "key": "API Key",
+    "test": "Test",
+    "name_duplicated": "Name Duplicated"
   },
   "general": {
     "appearance": "Appearance",

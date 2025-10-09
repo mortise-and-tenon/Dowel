@@ -9,6 +9,10 @@
 - [theme-change](https://github.com/saadeghi/theme-change)
 - [crypto-js](https://github.com/brix/crypto-js)
 
+## 翻译 SDK
+
+- 阿里云机器翻译 @alicloud/alimt20181012@1.4.1
+
 # 运行、编译环境
 
 ## 安装依赖

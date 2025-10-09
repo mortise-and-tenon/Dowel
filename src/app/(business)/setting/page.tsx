@@ -2,6 +2,7 @@
 import About from "@/app/components/settingchildren/About";
 import Ai from "@/app/components/settingchildren/AI";
 import General from "@/app/components/settingchildren/General";
+import Translation from "@/app/components/settingchildren/Translation";
 import SettingMenu from "@/app/components/SettingMenu";
 import { useState } from "react";
 
@@ -22,6 +23,7 @@ export default function Setting() {
         <SettingMenu onSelectMenu={onSelectMenu} />
       </div>
       <div className="flex-1 bg-base-300 h-full">
+        {selectedMenu === "translation" && <Translation />}
         {selectedMenu === "ai" && <Ai />}
         {selectedMenu === "general" && <General />}
         {selectedMenu === "about" && <About />}
