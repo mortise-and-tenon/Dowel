@@ -45,5 +45,13 @@
     "night": "Night",
     "coffee": "Coffee",
     "dim": "Dim"
+  },
+  "http": {
+    "fail": "Request exception or other issues",
+    "ai": {
+      "success": "Verification Succeeded",
+      "auth_error": "Authentication failed, please check your data",
+      "models_error": "Model Query Failed"
+    }
   }
 }

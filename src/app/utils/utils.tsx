@@ -4,7 +4,8 @@ import {
   readTextFile,
   writeTextFile,
 } from "@tauri-apps/plugin-fs";
-import CryptoJS from "crypto-js";
+import CryptoJS, { x64 } from "crypto-js";
+import { invoke } from "@tauri-apps/api/core";
 
 const SECRET_KEY = "Z39oqVCeeqKbz3x9SDuzQkoNqntALcdVjkPco5Gw6a4=";
 
@@ -25,9 +26,9 @@ export type AppData = {};
 
 export type ProviderData = {
   name: string;
-  api: string;
-  key: string;
-  on: boolean;
+  api?: string;
+  key?: string;
+  on?: boolean;
 };
 
 export type ConfigFile = {
@@ -39,7 +40,7 @@ export interface PlatformAdapter {
   readConfigData(): Promise<ConfigFile>;
   writeAppData(appData: AppData): void;
   readAppData(): Promise<AppData>;
-  writeProviderData(modelData: ProviderData): void;
+  writeProviderData(providerData: ProviderData): void;
   readProviders(): Promise<ProviderData[]>;
 }
 
@@ -88,24 +89,32 @@ export class TauriAdapter implements PlatformAdapter {
     return JSON.parse(jsonContent).app;
   };
 
-  writeProviderData = async (modelData: ProviderData) => {
+  writeProviderData = async (providerData: ProviderData) => {
     const jsonContent: ConfigFile = await this.readConfigData();
 
-    console.log(jsonContent);
-    // 查找是否存在同名模型
+    // 查找是否存在同名供应商
     const existingIndex = jsonContent.hasOwnProperty("providers")
-      ? jsonContent.providers.findIndex((item) => item.name === modelData.name)
+      ? jsonContent.providers.findIndex(
+          (item) => item.name === providerData.name
+        )
       : -2;
 
     if (existingIndex > -1) {
       // 存在同名供应商，替换原有数据
-      jsonContent.providers[existingIndex] = modelData;
+      const oldProvider = jsonContent.providers[existingIndex];
+      console.log(providerData);
+      jsonContent.providers[existingIndex] = {
+        name: providerData.name,
+        api: providerData.api ? providerData.api : oldProvider.api,
+        key: providerData.key ? providerData.key : oldProvider.key,
+        on: providerData.on != undefined ? providerData.on : oldProvider.on,
+      };
     } else {
       // 不存在同名模型，添加新供应商
       if (jsonContent.providers == null || jsonContent.providers == undefined) {
         jsonContent.providers = [];
       }
-      jsonContent.providers.push(modelData);
+      jsonContent.providers.push(providerData);
     }
 
     await writeTextFile(
@@ -132,3 +141,32 @@ export class TauriAdapter implements PlatformAdapter {
     return JSON.parse(jsonContent).providers;
   };
 }
+
+/**
+ * 请求数据
+ */
+export interface RequestOptions {
+  method: string;
+  url: string;
+  verify?: boolean;
+  headers?: Record<string, string>;
+  body?: string | undefined;
+}
+
+/**
+ * 响应数据
+ */
+export interface ApiResponse {
+  status: number;
+  body: string;
+  headers: Record<string, string>;
+}
+
+/**
+ * 封装的 http 方法
+ * @param options
+ * @returns
+ */
+export const fetchHttp = async (options: RequestOptions) => {
+  return await invoke<ApiResponse>(`make_request`, { options });
+};

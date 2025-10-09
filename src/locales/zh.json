@@ -45,5 +45,13 @@
     "night": "夜晚",
     "coffee": "咖啡",
     "dim": "昏暗"
+  },
+  "http": {
+    "fail": "请求异常或其他问题",
+    "ai": {
+      "success": "校验成功",
+      "auth_error": "认证失败，请检查数据",
+      "models_error": "模型查询失败"
+    }
   }
 }
