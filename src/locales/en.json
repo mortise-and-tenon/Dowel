@@ -31,6 +31,12 @@
     "feedback": "Feedback",
     "feedback_action": "Feedback"
   },
+  "translation": {
+    "provider": {
+      "aliyun": "Aliyun Machine Translation",
+      "baidu": "Baidu Translation"
+    }
+  },
   "ai": {
     "search_provider": "Search Provider",
     "add_provider": "Add Provider",

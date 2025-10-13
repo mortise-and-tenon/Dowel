@@ -129,6 +129,7 @@ export default function Ai() {
   const onHideModal = () => {
     setShowModal(false);
     setNewProviderName("");
+    setDisplayMsg("");
   };
 
   /**
@@ -178,6 +179,7 @@ export default function Ai() {
           on: false,
         });
         setShowModal(false);
+        setNewProviderName("");
         await readProviders();
       } catch (error) {}
     } else {
@@ -304,29 +306,35 @@ export default function Ai() {
           <MdOutlineSearch className="text-2xl" />
         </label>
         <div className="flex-1 min-h-0 w-full overflow-y-auto hide-scrollbar">
-          <ul className="menu w-full px-0">
-            {providers
-              .filter((item) => item.name.includes(filterCondition))
-              .map((item) => (
-                <li key={item.name} onClick={() => onClickModel(item)}>
-                  <div
-                    className={`flex items-center justify-between ${
-                      item.name === focusProvider?.name && "menu-active"
-                    }`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                        {item.name.substring(0, 1)}
+          {providers.length == 0 ? (
+            <div className="flex justify-center pt-4">
+              <span className="loading loading-dots loading-md"></span>
+            </div>
+          ) : (
+            <ul className="menu w-full px-0">
+              {providers
+                .filter((item) => item.name.includes(filterCondition))
+                .map((item) => (
+                  <li key={item.name} onClick={() => onClickModel(item)}>
+                    <div
+                      className={`flex items-center justify-between ${
+                        item.name === focusProvider?.name && "menu-active"
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                          {item.name.substring(0, 1)}
+                        </div>
+                        <span>{item.name}</span>
                       </div>
-                      <span>{item.name}</span>
+                      {item.on && (
+                        <MdToggleOn className="text-2xl text-success" />
+                      )}
                     </div>
-                    {item.on && (
-                      <MdToggleOn className="text-2xl text-success" />
-                    )}
-                  </div>
-                </li>
-              ))}
-          </ul>
+                  </li>
+                ))}
+            </ul>
+          )}
         </div>
         <button className="btn mb-2" onClick={onShowModal}>
           <MdAdd className="text-2xl" />

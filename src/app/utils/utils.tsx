@@ -31,9 +31,18 @@ export type ProviderData = {
   on?: boolean;
 };
 
+export type TranslationData = {
+  name: string;
+  api?: string;
+  key?: string;
+  secret?: string;
+  on: boolean;
+};
+
 export type ConfigFile = {
   app: AppData;
   providers: ProviderData[];
+  translations: TranslationData[];
 };
 
 export interface PlatformAdapter {
@@ -42,6 +51,9 @@ export interface PlatformAdapter {
   readAppData(): Promise<AppData>;
   writeProviderData(providerData: ProviderData): void;
   readProviders(): Promise<ProviderData[]>;
+  writeTranslation(translationData: TranslationData): void;
+  readTranslations(): Promise<TranslationData[]>;
+  readTranslation(name: string): Promise<TranslationData | undefined>;
 }
 
 export class TauriAdapter implements PlatformAdapter {
@@ -139,6 +151,69 @@ export class TauriAdapter implements PlatformAdapter {
     });
 
     return JSON.parse(jsonContent).providers;
+  };
+
+  writeTranslation = async (translationData: TranslationData) => {
+    const jsonContent: ConfigFile = await this.readConfigData();
+
+    // 查找是否存在同名翻译配置
+    const existingIndex = jsonContent.hasOwnProperty("translations")
+      ? jsonContent.translations.findIndex(
+          (item) => item.name === translationData.name
+        )
+      : -2;
+
+    if (existingIndex > -1) {
+      // 存在同名供应商，替换原有数据
+      const oldTranslation = jsonContent.translations[existingIndex];
+      jsonContent.translations[existingIndex] = {
+        name: translationData.name,
+        api: translationData.api ? translationData.api : oldTranslation.api,
+        key: translationData.key ? translationData.key : oldTranslation.key,
+        secret:
+          translationData.secret != undefined
+            ? translationData.secret
+            : oldTranslation.secret,
+        on: translationData.on != undefined ? translationData.on : false,
+      };
+    } else {
+      // 不存在同名翻译配置，添加新翻译配置
+      if (
+        jsonContent.translations == null ||
+        jsonContent.translations == undefined
+      ) {
+        jsonContent.translations = [];
+      }
+      jsonContent.translations.push(translationData);
+    }
+
+    await writeTextFile(
+      CONFIG_FILE_NAME,
+      JSON.stringify(jsonContent, null, 2),
+      {
+        baseDir: BaseDirectory.Home,
+      }
+    );
+  };
+
+  readTranslations = async () => {
+    const fileExists = await exists(CONFIG_FILE_NAME, {
+      baseDir: BaseDirectory.Home,
+    });
+    if (!fileExists) {
+      return [];
+    }
+
+    const jsonContent = await readTextFile(CONFIG_FILE_NAME, {
+      baseDir: BaseDirectory.Home,
+    });
+
+    return JSON.parse(jsonContent).translations;
+  };
+
+  readTranslation = async (name: string) => {
+    const datas: TranslationData[] = await this.readTranslations();
+    return datas.find((item) => item.name === name);
   };
 }
 
