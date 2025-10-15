@@ -22,16 +22,6 @@ type TranslationDisplay = {
   translatedText: string;
 };
 
-export interface LangOption {
-  readonly value: string;
-  readonly label: ReactNode;
-}
-
-interface GroupedOption {
-  readonly label: string;
-  readonly options: readonly LangOption[];
-}
-
 export default function Translation() {
   const { i18n } = useContext(I18nContext);
 
@@ -136,87 +126,6 @@ export default function Translation() {
     setEnableBtn(e.target.value != "");
   };
 
-  /**
-   * 语言列表分组标签
-   * @param data
-   * @returns
-   */
-  const langGroupLabel = (data: GroupedOption) =>
-    data.label != "" && (
-      <div>
-        <span>{data.label}</span>
-      </div>
-    );
-
-  /**
-   * 源语言列表项
-   */
-  const sourceLangs: readonly GroupedOption[] = [
-    {
-      label: "",
-      options: [
-        {
-          value: "auto",
-          label: i18n("langs.auto"),
-        },
-      ],
-    },
-    {
-      label: "常用语言",
-      options: CommonLangCode.map((item) => ({
-        value: item,
-        label: (
-          <div className="">
-            <div className="badge badge-outline badge-info mr-2">{item}</div>
-            <span>{i18n(`langs.${item}`)}</span>
-          </div>
-        ),
-      })),
-    },
-    {
-      label: "语言列表",
-      options: LangCode.map((item) => ({
-        value: item,
-        label: (
-          <div className="">
-            <div className="badge badge-outline badge-info mr-2">{item}</div>
-            <span>{i18n(`langs.${item}`)}</span>
-          </div>
-        ),
-      })),
-    },
-  ];
-
-  /**
-   * 目录语言列表项
-   */
-  const targetLangs: readonly GroupedOption[] = [
-    {
-      label: "常用语言",
-      options: CommonLangCode.map((item) => ({
-        value: item,
-        label: (
-          <div className="">
-            <div className="badge badge-outline badge-info mr-2">{item}</div>
-            <span>{i18n(`langs.${item}`)}</span>
-          </div>
-        ),
-      })),
-    },
-    {
-      label: "语言列表",
-      options: LangCode.map((item) => ({
-        value: item,
-        label: (
-          <div className="">
-            <div className="badge badge-outline badge-info mr-2">{item}</div>
-            <span>{i18n(`langs.${item}`)}</span>
-          </div>
-        ),
-      })),
-    },
-  ];
-
   return (
     <div className="flex w-full h-full">
       <div className="flex-1 p-4">
@@ -227,25 +136,25 @@ export default function Translation() {
           onChange={onChangeOriginal}
         ></textarea>
         <div className="mt-2 flex justify-between w-full p-2 bg-base-100 rounded-lg">
-          <div className="flex w-full">
-            <Select<LangOption, false, GroupedOption>
-              className="w-full"
-              options={sourceLangs}
-              defaultValue={sourceLangs[0].options[0]}
-              formatGroupLabel={langGroupLabel}
-            />
+          <div className="flex w-full space-x-2">
+            <select className="select focus:outline-none">
+              <option value="auto">{i18n("langs.auto")}</option>
+              {CommonLangCode.map((item) => (
+                <option value={item}>{i18n(`langs.${item}`)}</option>
+              ))}
+            </select>
+
             <button className="btn btn-ghost">
               <GoArrowSwitch />
             </button>
-            <Select<LangOption, false, GroupedOption>
-              className="w-full"
-              options={targetLangs}
-              defaultValue={targetLangs[0].options[0]}
-              formatGroupLabel={langGroupLabel}
-            />
+            <select className="select focus:outline-none">
+              {CommonLangCode.map((item) => (
+                <option value={item}>{i18n(`langs.${item}`)}</option>
+              ))}
+            </select>
           </div>
           <button
-            className="btn btn-ghost btn-primary"
+            className="btn btn-ghost btn-primary ml-2"
             onClick={onTranslate}
             disabled={!enableBtn}
           >
