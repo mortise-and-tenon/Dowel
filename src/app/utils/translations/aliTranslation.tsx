@@ -12,8 +12,8 @@ export class AliTranslation implements TranslationInterface {
 
     if (config != undefined) {
       const api = config.api ? config.api : "https://mt.aliyuncs.com";
-      const key = config.key;
-      const secret = config.secret;
+      const key = config.key ? config.key : "";
+      const secret = config.secret ? config.secret : "";
       return this.translateWithKey(text, from, to, api, key, secret);
     }
 
@@ -61,6 +61,8 @@ export class AliTranslation implements TranslationInterface {
       accessKeySecret,
       params
     );
+
+    console.log("aliyun translate");
 
     // 构建请求URL
     const queryString = new URLSearchParams(params).toString();

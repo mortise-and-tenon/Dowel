@@ -20,8 +20,8 @@ export class BaiduTranslation implements TranslationInterface {
       const api = config.api
         ? config.api
         : "https://fanyi-api.baidu.com/api/trans/vip/translate";
-      const key = config.key;
-      const secret = config.secret;
+      const key = config.key ? config.key : "";
+      const secret = config.secret ? config.secret : "";
       return this.translateWithKey(text, from, to, api, key, secret);
     }
 
@@ -38,7 +38,7 @@ export class BaiduTranslation implements TranslationInterface {
     // 构建请求参数
     const salt = this.generateRandomString();
     const sign = this.md5(appid + text + salt + key);
-    console.log(appid + text + salt + key);
+    console.log("baidu translate");
 
     const params = new URLSearchParams({
       q: text,
