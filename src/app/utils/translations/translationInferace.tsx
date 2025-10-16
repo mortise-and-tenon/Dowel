@@ -97,6 +97,11 @@ export const requestGetTranslationHttp = async (api: string) => {
 };
 
 /**
+ * 对话内容模板
+ */
+export const User_Prompt = "Translate into $target:$original";
+
+/**
  * 常用语言代码
  */
 export const CommonLangCode = ["zh", "en", "fr", "es", "pt", "it"];

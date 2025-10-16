@@ -110,7 +110,7 @@ export default function General() {
             <span>{i18n("general.language")}</span>
             <select
               defaultValue="zh"
-              className="select w-40"
+              className="select w-40 focus:outline-none"
               onChange={onSelectLang}
             >
               {langs.map((item) => (
@@ -125,7 +125,7 @@ export default function General() {
             <select
               data-choose-theme
               defaultValue="light"
-              className="select w-40"
+              className="select w-40 focus:outline-none"
             >
               <option disabled={true}>----{i18n("themes.light")}----</option>
               {lightThemes.map((item) => (

@@ -39,10 +39,19 @@ export type TranslationData = {
   on: boolean;
 };
 
+export type AiData = {
+  name: string;
+  provider: string;
+  model: string;
+  prompt: string;
+  on: boolean;
+};
+
 export type ConfigFile = {
   app: AppData;
   providers: ProviderData[];
   translations: TranslationData[];
+  ai: AiData[];
 };
 
 export interface PlatformAdapter {
@@ -54,6 +63,8 @@ export interface PlatformAdapter {
   writeTranslation(translationData: TranslationData): void;
   readTranslations(): Promise<TranslationData[]>;
   readTranslation(name: string): Promise<TranslationData | undefined>;
+  writeAiData(aiData: AiData): void;
+  readAiData(name: string): Promise<AiData | undefined>;
 }
 
 export class TauriAdapter implements PlatformAdapter {
@@ -122,7 +133,7 @@ export class TauriAdapter implements PlatformAdapter {
         on: providerData.on != undefined ? providerData.on : oldProvider.on,
       };
     } else {
-      // 不存在同名模型，添加新供应商
+      // 不存在同名，添加新供应商
       if (jsonContent.providers == null || jsonContent.providers == undefined) {
         jsonContent.providers = [];
       }
@@ -156,7 +167,7 @@ export class TauriAdapter implements PlatformAdapter {
   writeTranslation = async (translationData: TranslationData) => {
     const jsonContent: ConfigFile = await this.readConfigData();
 
-    // 查找是否存在同名翻译配置
+    // 查找是否存在同名配置
     const existingIndex = jsonContent.hasOwnProperty("translations")
       ? jsonContent.translations.findIndex(
           (item) => item.name === translationData.name
@@ -164,7 +175,7 @@ export class TauriAdapter implements PlatformAdapter {
       : -2;
 
     if (existingIndex > -1) {
-      // 存在同名供应商，替换原有数据
+      // 存在同名，替换原有数据
       const oldTranslation = jsonContent.translations[existingIndex];
       jsonContent.translations[existingIndex] = {
         name: translationData.name,
@@ -177,7 +188,7 @@ export class TauriAdapter implements PlatformAdapter {
         on: translationData.on != undefined ? translationData.on : false,
       };
     } else {
-      // 不存在同名翻译配置，添加新翻译配置
+      // 不存在同名配置，添加新配置
       if (
         jsonContent.translations == null ||
         jsonContent.translations == undefined
@@ -213,7 +224,68 @@ export class TauriAdapter implements PlatformAdapter {
 
   readTranslation = async (name: string) => {
     const datas: TranslationData[] = await this.readTranslations();
-    return datas.find((item) => item.name === name);
+    if (datas && datas.length > 0) {
+      return datas.find((item) => item.name === name);
+    }
+    return undefined;
+  };
+
+  writeAiData = async (aiData: AiData) => {
+    const jsonContent: ConfigFile = await this.readConfigData();
+
+    // 查找是否存在同名翻译配置
+    const existingIndex = jsonContent.hasOwnProperty("ai")
+      ? jsonContent.ai.findIndex((item) => item.name === aiData.name)
+      : -2;
+
+    if (existingIndex > -1) {
+      // 存在同名，替换原有数据
+      const oldAi = jsonContent.ai[existingIndex];
+      jsonContent.ai[existingIndex] = {
+        name: aiData.name,
+        provider: aiData.provider ? aiData.provider : oldAi.provider,
+        model: aiData.model ? aiData.model : oldAi.model,
+        prompt: aiData.prompt ? aiData.prompt : oldAi.prompt,
+        on: aiData.on != undefined ? aiData.on : false,
+      };
+    } else {
+      // 不存在同名配置，添加新配置
+      if (jsonContent.ai == null || jsonContent.ai == undefined) {
+        jsonContent.ai = [];
+      }
+      jsonContent.ai.push(aiData);
+    }
+
+    await writeTextFile(
+      CONFIG_FILE_NAME,
+      JSON.stringify(jsonContent, null, 2),
+      {
+        baseDir: BaseDirectory.Home,
+      }
+    );
+  };
+
+  readAiDatas = async () => {
+    const fileExists = await exists(CONFIG_FILE_NAME, {
+      baseDir: BaseDirectory.Home,
+    });
+    if (!fileExists) {
+      return [];
+    }
+
+    const jsonContent = await readTextFile(CONFIG_FILE_NAME, {
+      baseDir: BaseDirectory.Home,
+    });
+
+    return JSON.parse(jsonContent).ai;
+  };
+
+  readAiData = async (name: string) => {
+    const datas: AiData[] = await this.readAiDatas();
+    if (datas && datas.length > 0) {
+      return datas.find((item) => item.name === name);
+    }
+    return undefined;
   };
 }
 

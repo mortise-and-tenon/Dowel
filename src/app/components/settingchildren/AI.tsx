@@ -296,7 +296,7 @@ export default function Ai() {
   return (
     <div className="grid grid-cols-3 bg-base-100 h-full">
       <div className="border-r-2 border-base-300 pt-2 px-2 flex flex-col h-full min-h-0">
-        <label className="input">
+        <label className="input focus-within:outline-none">
           <input
             type="search"
             className="grow"
@@ -353,7 +353,7 @@ export default function Ai() {
                   <input
                     ref={inputRef}
                     type="text"
-                    className="input w-full"
+                    className="input w-full focus:outline-none"
                     placeholder={i18n("ai.name_placeholder")}
                     value={newProviderName}
                     onChange={onInputProviderName}
@@ -397,7 +397,7 @@ export default function Ai() {
           <input
             type="url"
             ref={apiInputRef}
-            className="input validator w-full"
+            className="input validator w-full focus:outline-none"
             value={newApi}
             required
             onChange={onChangeApi}
@@ -410,7 +410,7 @@ export default function Ai() {
           <div className="join">
             <input
               type={hideKey ? "password" : "text"}
-              className="input w-full"
+              className="input w-full focus:outline-none"
               value={newKey}
               required
               onChange={onChangeKey}
