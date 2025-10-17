@@ -22,7 +22,9 @@ export const decrypt = (ciphertext: string): string => {
   return bytes.toString(CryptoJS.enc.Utf8);
 };
 
-export type AppData = {};
+export type AppData = {
+  locale: string;
+};
 
 export type ProviderData = {
   name: string;
@@ -79,7 +81,9 @@ export class TauriAdapter implements PlatformAdapter {
     });
     if (!fileExists) {
       return {
-        app: {},
+        app: {
+          locale: "zh",
+        },
         providers: [],
         translations: [],
         ai: [],

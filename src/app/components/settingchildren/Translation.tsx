@@ -417,8 +417,12 @@ export default function Translation() {
       <div className="tabs tabs-lift h-full">
         <label className="tab">
           <input type="radio" name="translate_tabs" defaultChecked />
-          <AiOutlineGlobal />
-          {i18n("translation.web_translate")}
+          <div className="flex items-center space-x-2">
+            <AiOutlineGlobal className="text-primary text-lg" />
+            <span className="font-semibold">
+              {i18n("translation.web_translate")}
+            </span>
+          </div>
         </label>
         <div className="tab-content bg-base-100 border-base-300 p-4 overflow-y-auto hide-scrollbar">
           <ul className="list">
@@ -552,8 +556,12 @@ export default function Translation() {
 
         <label className="tab">
           <input type="radio" name="translate_tabs" />
-          <LuBrainCircuit />
-          {i18n("translation.ai_translate")}
+          <div className="flex items-center space-x-2">
+            <LuBrainCircuit className="text-primary text-lg" />
+            <span className="font-semibold">
+              {i18n("translation.ai_translate")}
+            </span>
+          </div>
         </label>
         <div className="tab-content bg-base-100 border-base-300 p-6">
           <div className="flex justify-end items-center pb-4">

@@ -5,19 +5,32 @@ import { useEffect } from "react";
 import { themeChange } from "theme-change";
 import { I18nContext } from "./utils/providers/I18nProvider";
 import { useRouter } from "next/navigation";
+import { TauriAdapter } from "./utils/utils";
 
 export default function Home() {
-  const { i18n, translation } = useContext(I18nContext);
+  const { i18n, setLocale, translation } = useContext(I18nContext);
   const router = useRouter();
+
+  const adapter = new TauriAdapter();
 
   useEffect(() => {
     themeChange(false);
+    readAppConfig();
+
     const timer = setTimeout(() => {
       router.push("/home"); // 替换为你的主页面路径
     }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
+
+  const readAppConfig = async () => {
+    const config = await adapter.readAppData();
+    if (config) {
+      setLocale(config.locale);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen">
       <div className="fulltitlebar">

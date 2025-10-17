@@ -1,8 +1,8 @@
 "use client";
 
 import { I18nContext } from "@/app/utils/providers/I18nProvider";
-import { useEffect } from "react";
-import { useContext } from "react";
+import { TauriAdapter } from "@/app/utils/utils";
+import { useContext, useEffect } from "react";
 import { themeChange } from "theme-change";
 
 /**
@@ -10,7 +10,9 @@ import { themeChange } from "theme-change";
  * @returns
  */
 export default function General() {
-  const { i18n, setLocale } = useContext(I18nContext);
+  const { i18n, locale, setLocale } = useContext(I18nContext);
+
+  const adapter = new TauriAdapter();
 
   /**
    * 语言列表
@@ -96,6 +98,7 @@ export default function General() {
    */
   const onSelectLang = (e: any) => {
     setLocale(e.target.value);
+    adapter.writeAppData({ locale: e.target.value });
   };
 
   return (
@@ -109,7 +112,7 @@ export default function General() {
           <div className="flex justify-between items-center">
             <span>{i18n("general.language")}</span>
             <select
-              defaultValue="zh"
+              value={locale}
               className="select w-40 focus:outline-none"
               onChange={onSelectLang}
             >

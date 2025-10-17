@@ -141,38 +141,52 @@ export default function Translation() {
    */
   const onTranslate = async () => {
     try {
-      translationData.forEach(async (item) => {
-        let translatedText = "";
-        if (item.ai && aiData) {
-          try {
-            const msg = User_Msg_Format.replace("$target", target).replace(
-              "$original",
-              originalText
-            );
-            console.log(msg);
-            const result = await aiUtils.singleCompletions(aiData.name, msg);
-            if (result.success) {
-              translatedText = result.data;
-            }
-          } catch (error) {
-            console.error("ai translate error:", error);
-          }
-        } else {
-          const result = await translationInstances[item.name].translate(
-            originalText,
-            source,
-            target
-          );
-
-          translatedText = result.translated;
-        }
-
-        setTranslationData((pre) => {
-          const newData = pre.map((data) =>
-            data.name === item.name ? { ...data, translatedText } : data
-          );
-          return newData;
+      setTranslationData((pre) => {
+        const newData = pre.map((data, index) => {
+          return {
+            ...data,
+            loading: true,
+          };
         });
+        return newData;
+      });
+
+      const taskResults: string[] = await Promise.all(
+        translationData.map((item) => {
+          if (item.ai && aiData) {
+            try {
+              const msg = User_Msg_Format.replace("$target", target).replace(
+                "$original",
+                originalText
+              );
+              return aiUtils
+                .singleCompletions(aiData.name, msg)
+                .then((result) => {
+                  if (result.success) {
+                    return result.data;
+                  }
+                });
+            } catch (error) {
+              console.error("ai translate error:", error);
+              return "";
+            }
+          } else {
+            return translationInstances[item.name]
+              .translate(originalText, source, target)
+              .then((result) => result.translated);
+          }
+        })
+      );
+
+      setTranslationData((pre) => {
+        const newData = pre.map((data, index) => {
+          return {
+            ...data,
+            translatedText: taskResults[index],
+            loading: false,
+          };
+        });
+        return newData;
       });
     } catch (error: any) {
       console.error("翻译失败:", error.message);
@@ -265,10 +279,10 @@ export default function Translation() {
         </div>
       </div>
       <div className="flex-1 p-4 space-y-2 overflow-y-auto hide-scrollbar">
-        {translationData.map((item) => (
+        {translationData.map((item, index) => (
           <div
             className={`collapse collapse-arrow ${
-              aiData ? "" : "collapse-open"
+              index == 0 && "collapse-open"
             } bg-base-300 border-base-300 border`}
             key={item.name}
           >
@@ -283,7 +297,11 @@ export default function Translation() {
             </div>
             <div className="collapse-content bg-base-100">
               <div className="pt-2">
-                <div>{item.translatedText}</div>
+                {item.loading ? (
+                  <div className="loading loading-dots text-primary"></div>
+                ) : (
+                  <div>{item.translatedText}</div>
+                )}
 
                 <div className="flex justify-end">
                   <button
