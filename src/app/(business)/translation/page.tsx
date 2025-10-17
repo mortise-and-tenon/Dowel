@@ -193,6 +193,29 @@ export default function Translation() {
     }
   };
 
+  const translateTextRefs = useRef<Record<number, HTMLDivElement | null>>({});
+
+  /**
+   * 复制指定的译文
+   * @param itemId
+   * @returns
+   */
+  const onCopy = async (itemId: number) => {
+    const targetDiv = translateTextRefs.current[itemId];
+    if (!targetDiv) {
+      return;
+    }
+
+    try {
+      const textToCopy = targetDiv.textContent || "";
+      if (!textToCopy.trim()) throw new Error("内容为空");
+
+      await navigator.clipboard.writeText(textToCopy);
+    } catch (err) {
+      console.error(`复制 id=${itemId} 失败:`, err);
+    }
+  };
+
   /**
    * 输入原文
    * @param e
@@ -300,15 +323,22 @@ export default function Translation() {
                 {item.loading ? (
                   <div className="loading loading-dots text-primary"></div>
                 ) : (
-                  <div>{item.translatedText}</div>
+                  <div
+                    ref={(el: HTMLDivElement | null) => {
+                      translateTextRefs.current[index] = el;
+                    }}
+                  >
+                    {item.translatedText}
+                  </div>
                 )}
 
                 <div className="flex justify-end">
                   <button
-                    className="btn btn-ghost"
+                    className="btn btn-ghost btn-primary"
                     disabled={item.translatedText == ""}
+                    onClick={(e) => onCopy(index)}
                   >
-                    <RiFileCopyLine className="text-xl" />
+                    <RiFileCopyLine className="text-lg" />
                   </button>
                 </div>
               </div>
