@@ -1,4 +1,5 @@
 "use client";
+import { AiUtils } from "@/app/utils/aiUtils";
 import { I18nContext } from "@/app/utils/providers/I18nProvider";
 import { AliTranslation } from "@/app/utils/translations/aliTranslation";
 import { BaiduTranslation } from "@/app/utils/translations/baiduTranslation";
@@ -7,6 +8,7 @@ import {
   DefaultTranslations,
   LangCode,
   TranslationInterface,
+  User_Msg_Format,
 } from "@/app/utils/translations/translationInferace";
 import { AiData, TauriAdapter, TranslationData } from "@/app/utils/utils";
 import { useRef } from "react";
@@ -14,12 +16,13 @@ import { ReactNode, useContext, useEffect, useState } from "react";
 import { GoArrowSwitch } from "react-icons/go";
 import { MdAutoAwesome, MdOutlineTranslate } from "react-icons/md";
 import { RiFileCopyLine } from "react-icons/ri";
-import Select, { Options } from "react-select";
 
 type TranslationDisplay = {
   name: string;
+  ai: boolean;
   i18nName: string;
   logo: ReactNode;
+  loading: boolean;
   translatedText: string;
 };
 
@@ -27,6 +30,8 @@ export default function Translation() {
   const { i18n, locale } = useContext(I18nContext);
 
   const adapter = new TauriAdapter();
+
+  const aiUtils = new AiUtils();
 
   /**
    * 原文文本输入框
@@ -71,7 +76,6 @@ export default function Translation() {
 
   useEffect(() => {
     readTranslations();
-    readAiData();
 
     if (sourceTextRef.current) {
       const timer = setTimeout(() => {
@@ -90,8 +94,9 @@ export default function Translation() {
   const readTranslations = async () => {
     const data: TranslationData[] = await adapter.readTranslations();
 
+    let resultData: TranslationDisplay[] = [];
     if (data.length > 0) {
-      const resultData = data
+      resultData = data
         .filter((item) => item.on)
         .map((a: TranslationData) => {
           const b = DefaultTranslations.find(
@@ -100,32 +105,36 @@ export default function Translation() {
           if (b) {
             return {
               name: b.name,
+              ai: false,
               i18nName: b.i18nName,
               logo: b.logo,
+              loading: false,
               translatedText: "",
             };
           }
           return null;
         })
         .filter((item) => item != null);
-      setTranslationData(resultData);
     }
-  };
 
-  /**
-   * 读取AI翻译配置
-   */
-  const readAiData = async () => {
-    const data = await adapter.readAiData("translation");
-    if (data && data.on) {
-      setAiData(data);
+    const aiData = await adapter.readAiData("translation");
+    if (aiData && aiData.on) {
+      setAiData(aiData);
+      resultData = [
+        {
+          name: aiData.name,
+          ai: true,
+          i18nName: "translation.ai_translate",
+          logo: <MdAutoAwesome className="text-primary" />,
+          loading: false,
+          translatedText: "",
+        },
+        ...resultData,
+      ];
     }
-  };
 
-  /**
-   * AI翻译的文字
-   */
-  const [aiTranslatedText, setAiTranslatedText] = useState("");
+    setTranslationData(resultData);
+  };
 
   /**
    * 点击翻译按钮
@@ -133,17 +142,34 @@ export default function Translation() {
   const onTranslate = async () => {
     try {
       translationData.forEach(async (item) => {
-        const result = await translationInstances[item.name].translate(
-          originalText,
-          source,
-          target
-        );
+        let translatedText = "";
+        if (item.ai && aiData) {
+          try {
+            const msg = User_Msg_Format.replace("$target", target).replace(
+              "$original",
+              originalText
+            );
+            console.log(msg);
+            const result = await aiUtils.singleCompletions(aiData.name, msg);
+            if (result.success) {
+              translatedText = result.data;
+            }
+          } catch (error) {
+            console.error("ai translate error:", error);
+          }
+        } else {
+          const result = await translationInstances[item.name].translate(
+            originalText,
+            source,
+            target
+          );
+
+          translatedText = result.translated;
+        }
 
         setTranslationData((pre) => {
           const newData = pre.map((data) =>
-            data.name === item.name
-              ? { ...data, translatedText: result.translated }
-              : data
+            data.name === item.name ? { ...data, translatedText } : data
           );
           return newData;
         });
@@ -193,9 +219,9 @@ export default function Translation() {
     <div className="flex w-full h-full">
       <div className="flex-1 p-4">
         <textarea
-          className="textarea h-60 w-full focus:outline-none"
+          className="textarea h-60 max-h-60 w-full focus:outline-none"
           ref={sourceTextRef}
-          placeholder="原文"
+          placeholder={i18n("translation.original")}
           value={originalText}
           onChange={onChangeOriginal}
         ></textarea>
@@ -230,7 +256,7 @@ export default function Translation() {
             </select>
           </div>
           <button
-            className="btn btn-ghost btn-primary ml-2"
+            className="btn btn-outline btn-primary ml-2"
             onClick={onTranslate}
             disabled={!enableBtn}
           >
@@ -239,36 +265,6 @@ export default function Translation() {
         </div>
       </div>
       <div className="flex-1 p-4 space-y-2 overflow-y-auto hide-scrollbar">
-        {aiData && (
-          <div
-            className="collapse collapse-arrow collapse-open bg-base-300 border-base-300 border"
-            key="AI"
-          >
-            <input type="checkbox" />
-            <div className="collapse-title bg-base-200">
-              <div className="flex items-center">
-                <div className="w-20 flex justify-center">
-                  <MdAutoAwesome className="text-primary" />
-                </div>
-                <span className="pl-2 font-semibold">AI翻译</span>
-              </div>
-            </div>
-            <div className="collapse-content bg-base-100">
-              <div className="pt-2">
-                <div>{aiTranslatedText}</div>
-
-                <div className="flex justify-end">
-                  <button
-                    className="btn btn-ghost"
-                    disabled={aiTranslatedText == ""}
-                  >
-                    <RiFileCopyLine className="text-xl" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
         {translationData.map((item) => (
           <div
             className={`collapse collapse-arrow ${
@@ -279,7 +275,7 @@ export default function Translation() {
             <input type="checkbox" />
             <div className="collapse-title bg-base-200">
               <div className="flex items-center">
-                <div className="w-20">{item.logo}</div>
+                <div className="w-20 flex justify-center">{item.logo}</div>
                 <span className="pl-2 font-semibold">
                   {i18n(item.i18nName)}
                 </span>

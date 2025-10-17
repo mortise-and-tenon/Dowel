@@ -55,25 +55,35 @@ export type ConfigFile = {
 };
 
 export interface PlatformAdapter {
-  readConfigData(): Promise<ConfigFile>;
-  writeAppData(appData: AppData): void;
+  readConfigFile(): Promise<ConfigFile>;
+  writeAppData(appData: AppData): Promise<boolean>;
   readAppData(): Promise<AppData>;
-  writeProviderData(providerData: ProviderData): void;
+  writeProviderData(providerData: ProviderData): Promise<boolean>;
   readProviders(): Promise<ProviderData[]>;
-  writeTranslation(translationData: TranslationData): void;
+  readProvider(name: string): Promise<ProviderData | undefined>;
+  writeTranslation(translationData: TranslationData): Promise<boolean>;
   readTranslations(): Promise<TranslationData[]>;
   readTranslation(name: string): Promise<TranslationData | undefined>;
-  writeAiData(aiData: AiData): void;
+  writeAiData(aiData: AiData): Promise<boolean>;
   readAiData(name: string): Promise<AiData | undefined>;
 }
 
 export class TauriAdapter implements PlatformAdapter {
-  readConfigData = async () => {
+  /**
+   * 读取整个配置文件
+   * @returns
+   */
+  readConfigFile = async (): Promise<ConfigFile> => {
     const fileExists = await exists(CONFIG_FILE_NAME, {
       baseDir: BaseDirectory.Home,
     });
     if (!fileExists) {
-      return {};
+      return {
+        app: {},
+        providers: [],
+        translations: [],
+        ai: [],
+      };
     }
 
     const jsonContent = await readTextFile(CONFIG_FILE_NAME, {
@@ -83,50 +93,69 @@ export class TauriAdapter implements PlatformAdapter {
     return JSON.parse(jsonContent);
   };
 
-  writeAppData = async (appData: AppData) => {
-    const jsonContent: ConfigFile = await this.readConfigData();
-
-    jsonContent.app = appData;
-
-    await writeTextFile(
-      CONFIG_FILE_NAME,
-      JSON.stringify(jsonContent, null, 2),
-      {
-        baseDir: BaseDirectory.Home,
-      }
-    );
-  };
-
-  readAppData = async () => {
-    const fileExists = await exists(CONFIG_FILE_NAME, {
-      baseDir: BaseDirectory.Home,
-    });
-    if (!fileExists) {
-      return {};
+  /**
+   * 保存配置文件
+   * @param configFile
+   */
+  writeConfigFile = async (configFile: ConfigFile) => {
+    try {
+      await writeTextFile(
+        CONFIG_FILE_NAME,
+        JSON.stringify(configFile, null, 2),
+        {
+          baseDir: BaseDirectory.Home,
+        }
+      );
+      return true;
+    } catch (error) {
+      return false;
     }
-
-    const jsonContent = await readTextFile(CONFIG_FILE_NAME, {
-      baseDir: BaseDirectory.Home,
-    });
-
-    return JSON.parse(jsonContent).app;
   };
 
-  writeProviderData = async (providerData: ProviderData) => {
-    const jsonContent: ConfigFile = await this.readConfigData();
+  /**
+   * 写入 app 数据
+   * @param appData
+   */
+  writeAppData = async (appData: AppData): Promise<boolean> => {
+    const configFile = await this.readConfigFile();
+
+    configFile.app = appData;
+
+    try {
+      await this.writeConfigFile(configFile);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  /**
+   * 读取 app 数据
+   * @returns
+   */
+  readAppData = async (): Promise<AppData> => {
+    const configFile = await this.readConfigFile();
+    return configFile.app;
+  };
+
+  /**
+   * 写入供应商数据
+   * @param providerData
+   */
+  writeProviderData = async (providerData: ProviderData): Promise<boolean> => {
+    const configFile = await this.readConfigFile();
 
     // 查找是否存在同名供应商
-    const existingIndex = jsonContent.hasOwnProperty("providers")
-      ? jsonContent.providers.findIndex(
+    const existingIndex = configFile.hasOwnProperty("providers")
+      ? configFile.providers.findIndex(
           (item) => item.name === providerData.name
         )
       : -2;
 
     if (existingIndex > -1) {
       // 存在同名供应商，替换原有数据
-      const oldProvider = jsonContent.providers[existingIndex];
-      console.log(providerData);
-      jsonContent.providers[existingIndex] = {
+      const oldProvider = configFile.providers[existingIndex];
+      configFile.providers[existingIndex] = {
         name: providerData.name,
         api: providerData.api ? providerData.api : oldProvider.api,
         key: providerData.key ? providerData.key : oldProvider.key,
@@ -134,50 +163,57 @@ export class TauriAdapter implements PlatformAdapter {
       };
     } else {
       // 不存在同名，添加新供应商
-      if (jsonContent.providers == null || jsonContent.providers == undefined) {
-        jsonContent.providers = [];
+      if (configFile.providers == null || configFile.providers == undefined) {
+        configFile.providers = [];
       }
-      jsonContent.providers.push(providerData);
+      configFile.providers.push(providerData);
     }
 
-    await writeTextFile(
-      CONFIG_FILE_NAME,
-      JSON.stringify(jsonContent, null, 2),
-      {
-        baseDir: BaseDirectory.Home,
-      }
-    );
+    return await this.writeConfigFile(configFile);
   };
 
-  readProviders = async () => {
-    const fileExists = await exists(CONFIG_FILE_NAME, {
-      baseDir: BaseDirectory.Home,
-    });
-    if (!fileExists) {
-      return [];
+  /**
+   * 读取供应商数据
+   * @returns
+   */
+  readProviders = async (): Promise<ProviderData[]> => {
+    const configFile = await this.readConfigFile();
+    return configFile.providers;
+  };
+
+  /**
+   * 读取指定的供应商数据
+   * @param name
+   * @returns
+   */
+  readProvider = async (name: string): Promise<ProviderData | undefined> => {
+    const datas = await this.readProviders();
+    if (datas && datas.length > 0) {
+      return datas.find((item) => item.name === name);
     }
-
-    const jsonContent = await readTextFile(CONFIG_FILE_NAME, {
-      baseDir: BaseDirectory.Home,
-    });
-
-    return JSON.parse(jsonContent).providers;
+    return undefined;
   };
 
-  writeTranslation = async (translationData: TranslationData) => {
-    const jsonContent: ConfigFile = await this.readConfigData();
+  /**
+   * 写入翻译厂商配置
+   * @param translationData
+   */
+  writeTranslation = async (
+    translationData: TranslationData
+  ): Promise<boolean> => {
+    const configFile = await this.readConfigFile();
 
     // 查找是否存在同名配置
-    const existingIndex = jsonContent.hasOwnProperty("translations")
-      ? jsonContent.translations.findIndex(
+    const existingIndex = configFile.hasOwnProperty("translations")
+      ? configFile.translations.findIndex(
           (item) => item.name === translationData.name
         )
       : -2;
 
     if (existingIndex > -1) {
       // 存在同名，替换原有数据
-      const oldTranslation = jsonContent.translations[existingIndex];
-      jsonContent.translations[existingIndex] = {
+      const oldTranslation = configFile.translations[existingIndex];
+      configFile.translations[existingIndex] = {
         name: translationData.name,
         api: translationData.api ? translationData.api : oldTranslation.api,
         key: translationData.key ? translationData.key : oldTranslation.key,
@@ -190,38 +226,31 @@ export class TauriAdapter implements PlatformAdapter {
     } else {
       // 不存在同名配置，添加新配置
       if (
-        jsonContent.translations == null ||
-        jsonContent.translations == undefined
+        configFile.translations == null ||
+        configFile.translations == undefined
       ) {
-        jsonContent.translations = [];
+        configFile.translations = [];
       }
-      jsonContent.translations.push(translationData);
+      configFile.translations.push(translationData);
     }
 
-    await writeTextFile(
-      CONFIG_FILE_NAME,
-      JSON.stringify(jsonContent, null, 2),
-      {
-        baseDir: BaseDirectory.Home,
-      }
-    );
+    return await this.writeConfigFile(configFile);
   };
 
-  readTranslations = async () => {
-    const fileExists = await exists(CONFIG_FILE_NAME, {
-      baseDir: BaseDirectory.Home,
-    });
-    if (!fileExists) {
-      return [];
-    }
-
-    const jsonContent = await readTextFile(CONFIG_FILE_NAME, {
-      baseDir: BaseDirectory.Home,
-    });
-
-    return JSON.parse(jsonContent).translations;
+  /**
+   * 读取翻译厂商配置
+   * @returns
+   */
+  readTranslations = async (): Promise<TranslationData[]> => {
+    const configFile = await this.readConfigFile();
+    return configFile.translations;
   };
 
+  /**
+   * 读取指定的翻译厂商配置
+   * @param name
+   * @returns
+   */
   readTranslation = async (name: string) => {
     const datas: TranslationData[] = await this.readTranslations();
     if (datas && datas.length > 0) {
@@ -230,57 +259,48 @@ export class TauriAdapter implements PlatformAdapter {
     return undefined;
   };
 
-  writeAiData = async (aiData: AiData) => {
-    const jsonContent: ConfigFile = await this.readConfigData();
+  /**
+   * 写入 ai 配置数据
+   * @param aiData
+   */
+  writeAiData = async (aiData: AiData): Promise<boolean> => {
+    const configFile = await this.readConfigFile();
 
-    // 查找是否存在同名翻译配置
-    const existingIndex = jsonContent.hasOwnProperty("ai")
-      ? jsonContent.ai.findIndex((item) => item.name === aiData.name)
+    // 查找是否存在同名配置
+    const existingIndex = configFile.hasOwnProperty("ai")
+      ? configFile.ai.findIndex((item) => item.name === aiData.name)
       : -2;
 
     if (existingIndex > -1) {
       // 存在同名，替换原有数据
-      const oldAi = jsonContent.ai[existingIndex];
-      jsonContent.ai[existingIndex] = {
+      const oldAi = configFile.ai[existingIndex];
+      configFile.ai[existingIndex] = {
         name: aiData.name,
         provider: aiData.provider ? aiData.provider : oldAi.provider,
         model: aiData.model ? aiData.model : oldAi.model,
         prompt: aiData.prompt ? aiData.prompt : oldAi.prompt,
         on: aiData.on != undefined ? aiData.on : false,
       };
-    } else {
-      // 不存在同名配置，添加新配置
-      if (jsonContent.ai == null || jsonContent.ai == undefined) {
-        jsonContent.ai = [];
-      }
-      jsonContent.ai.push(aiData);
     }
 
-    await writeTextFile(
-      CONFIG_FILE_NAME,
-      JSON.stringify(jsonContent, null, 2),
-      {
-        baseDir: BaseDirectory.Home,
-      }
-    );
+    return await this.writeConfigFile(configFile);
   };
 
-  readAiDatas = async () => {
-    const fileExists = await exists(CONFIG_FILE_NAME, {
-      baseDir: BaseDirectory.Home,
-    });
-    if (!fileExists) {
-      return [];
-    }
-
-    const jsonContent = await readTextFile(CONFIG_FILE_NAME, {
-      baseDir: BaseDirectory.Home,
-    });
-
-    return JSON.parse(jsonContent).ai;
+  /**
+   * 读取 ai 配置
+   * @returns
+   */
+  readAiDatas = async (): Promise<AiData[]> => {
+    const configFile = await this.readConfigFile();
+    return configFile.ai;
   };
 
-  readAiData = async (name: string) => {
+  /**
+   * 读取指定名字的 ai 配置
+   * @param name
+   * @returns
+   */
+  readAiData = async (name: string): Promise<AiData | undefined> => {
     const datas: AiData[] = await this.readAiDatas();
     if (datas && datas.length > 0) {
       return datas.find((item) => item.name === name);

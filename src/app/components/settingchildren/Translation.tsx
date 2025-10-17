@@ -418,12 +418,12 @@ export default function Translation() {
         <label className="tab">
           <input type="radio" name="translate_tabs" defaultChecked />
           <AiOutlineGlobal />
-          互联网翻译
+          {i18n("translation.web_translate")}
         </label>
         <div className="tab-content bg-base-100 border-base-300 p-4 overflow-y-auto hide-scrollbar">
           <ul className="list">
             <li className="p-2 text-xs opacity-60 tracking-wide">
-              <label className="label">启用平台用于翻译</label>
+              <label className="label">{i18n("translation.enable")}</label>
             </li>
 
             {translationConfigData.map((item) => (
@@ -470,7 +470,9 @@ export default function Translation() {
               <div className="w-20">
                 {selectedTranslation ? selectedTranslation.logo : <></>}
               </div>
-              <span className="font-bold text-2xl">配置</span>
+              <span className="font-bold text-2xl">
+                {i18n("translation.config")}
+              </span>
             </h3>
             <div className="py-4">
               <form method="dialog">
@@ -488,7 +490,9 @@ export default function Translation() {
                         onChange={onChangeApi}
                       />
                     </label>
-                    <p className="validator-hint">URL 格式不正确</p>
+                    <p className="validator-hint">
+                      {i18n("translation.url_error_tip")}
+                    </p>
                   </>
                 )}
 
@@ -549,13 +553,13 @@ export default function Translation() {
         <label className="tab">
           <input type="radio" name="translate_tabs" />
           <LuBrainCircuit />
-          AI翻译
+          {i18n("translation.ai_translate")}
         </label>
         <div className="tab-content bg-base-100 border-base-300 p-6">
           <div className="flex justify-end items-center pb-4">
             <div
               className="tooltip tooltip-left"
-              data-tip={ai.on ? "启用" : "停用"}
+              data-tip={ai.on ? i18n("common.enable") : i18n("common.disable")}
             >
               <input
                 type="checkbox"
@@ -568,10 +572,10 @@ export default function Translation() {
           </div>
           <div className="flex space-x-2">
             <label className="select w-full focus-within:outline-none">
-              <span className="label">供应商</span>
+              <span className="label">{i18n("ai.provider")}</span>
               <select value={ai?.provider} onChange={onSelectProvider}>
                 <option value={"default"} disabled={true}>
-                  选择供应商
+                  {i18n("ai.select_provider")}
                 </option>
                 {providers.map((item) => (
                   <option key={item.name} value={item.name}>
@@ -581,7 +585,7 @@ export default function Translation() {
               </select>
             </label>
             <label className="select w-full focus-within:outline-none">
-              <span className="label">模型</span>
+              <span className="label">{i18n("ai.model")}</span>
               <select
                 className="select"
                 value={ai?.model}
@@ -589,7 +593,7 @@ export default function Translation() {
                 disabled={models.length == 0}
               >
                 <option value={"default"} disabled={true}>
-                  选择模型
+                  {i18n("ai.select_model")}
                 </option>
                 {models.map((item: any) => (
                   <option key={`${item.id}-${item.owned_by}`} value={item.id}>
@@ -602,7 +606,7 @@ export default function Translation() {
           <div className="pt-4">
             <div className="flex justify-between mb-2">
               <legend className="fieldset-legend">
-                提示词
+                {i18n("ai.prompt")}
                 <div>
                   {isEdit ? (
                     <IoMdUnlock className="text-lg text-success" />
@@ -617,7 +621,7 @@ export default function Translation() {
                   onClick={onResetPrompt}
                 >
                   <RiResetLeftFill className="text-lg" />
-                  重置
+                  {i18n("common.reset")}
                 </button>
                 <label className="label">
                   <input
@@ -632,7 +636,7 @@ export default function Translation() {
             </div>
             <textarea
               className="textarea h-40 max-h-40 w-full focus:outline-none"
-              placeholder="填写翻译提示词"
+              placeholder={i18n("ai.input_prompt")}
               value={ai?.prompt}
               onChange={onChangePrompt}
               disabled={!isEdit}

@@ -15,7 +15,10 @@
   "common": {
     "confirm": "Ok",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "enable": "Enable",
+    "disable": "Disable",
+    "reset": "Reset"
   },
   "setting": {
     "translation": "Translation Settings",
@@ -35,9 +38,17 @@
     "provider": {
       "aliyun": "Aliyun Machine Translation",
       "baidu": "Baidu Translation"
-    }
+    },
+    "web_translate": "Web Translation",
+    "enable": "Enable the platform for translation",
+    "config": "Configuration",
+    "url_error_tip": "URL format is incorrect",
+    "ai_translate": "AI Translation",
+    "original": "Original text"
   },
   "ai": {
+    "provider": "Provider",
+    "select_provider": "Select Provider",
     "search_provider": "Search Provider",
     "add_provider": "Add Provider",
     "name": "Name",
@@ -45,7 +56,11 @@
     "api": "API Address",
     "key": "API Key",
     "test": "Test",
-    "name_duplicated": "Name Duplicated"
+    "name_duplicated": "Name Duplicated",
+    "model": "Model",
+    "select_model": "Select Model",
+    "prompt": "Prompt",
+    "input_prompt": "Input prompt"
   },
   "general": {
     "appearance": "Appearance",

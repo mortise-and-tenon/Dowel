@@ -15,7 +15,10 @@
   "common": {
     "confirm": "确定",
     "cancel": "取消",
-    "save": "保存"
+    "save": "保存",
+    "enable": "启用",
+    "disable": "禁用",
+    "reset": "重置"
   },
   "setting": {
     "translation": "翻译设置",
@@ -35,9 +38,17 @@
     "provider": {
       "aliyun": "阿里云机器翻译",
       "baidu": "百度翻译开放平台"
-    }
+    },
+    "web_translate": "互联网翻译",
+    "enable": "启用平台用于翻译",
+    "config": "配置",
+    "url_error_tip": "URL 格式不正确",
+    "ai_translate": "AI翻译",
+    "original": "原文"
   },
   "ai": {
+    "provider": "供应商",
+    "select_provider": "选择供应商",
     "search_provider": "搜索供应商",
     "add_provider": "添加供应商",
     "name": "名称",
@@ -45,7 +56,11 @@
     "api": "API 地址",
     "key": "API 密钥",
     "test": "检测",
-    "name_duplicated": "名称重复"
+    "name_duplicated": "名称重复",
+    "model": "模型",
+    "select_model": "选择模型",
+    "prompt": "提示词",
+    "input_prompt": "填写提示词"
   },
   "general": {
     "appearance": "外观",
@@ -72,7 +87,10 @@
     "ai": {
       "success": "校验成功",
       "auth_error": "认证失败，请检查数据",
-      "models_error": "模型查询失败"
+      "models_error": "模型查询失败",
+      "resp_error": "响应异常",
+      "data_error": "响应数据异常",
+      "config_not_data": "配置不存在"
     }
   },
   "langs": {
