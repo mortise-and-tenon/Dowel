@@ -50,7 +50,6 @@ export class TranslateUtils {
           // 2. 转义反斜杠（避免被 JSON 解析为转义符）
           // 3. 转义控制字符（JSON 不允许未转义的控制字符）
           .replace(/\x00-\x1F/g, (char) => {
-            // 映射控制字符到转义序列（如 \n、\t 等）
             const map: Record<string, string> = {
               "\b": "\b",
               "\f": "\f",
