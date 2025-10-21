@@ -74,7 +74,7 @@ export class TranslateUtils {
     if (html === "") {
       return "";
     }
-    const selector = 'div.book[lang="en"]';
+    const selector = "div#content";
 
     return this.parseTag(html, selector);
   };

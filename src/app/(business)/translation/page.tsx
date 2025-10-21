@@ -381,7 +381,7 @@ export default function Translation() {
             <button
               className="btn btn-outline btn-primary ml-2"
               onClick={onAiTranslate}
-              disabled={!enableBtn}
+              disabled={!enableBtn || aiLoading}
             >
               <MdOutlineTranslate className="text-lg" />
               AI
