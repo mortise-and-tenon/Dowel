@@ -1,7 +1,7 @@
 {
-  "productName": "truss-tauri",
+  "productName": "dowel",
   "version": "0.1.0",
-  "identifier": "fun.mortnon.truss.app",
+  "identifier": "fun.mortnon.dowel.app",
   "build": {
     "frontendDist": "../out",
     "devUrl": "http://localhost:3000",
