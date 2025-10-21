@@ -3,7 +3,7 @@
 import { AiUtils } from "@/app/utils/aiUtils";
 import { I18nContext } from "@/app/utils/providers/I18nProvider";
 import { PlatformAdapter, ProviderData, TauriAdapter } from "@/app/utils/utils";
-import { ReactNode, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { FaTimesCircle } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";

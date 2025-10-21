@@ -1,11 +1,17 @@
-import { AiOutlineGlobal, AiOutlineIdcard } from "react-icons/ai";
-import { HiOutlineServer, HiServer } from "react-icons/hi2";
-import { LuBrainCircuit, LuKeyRound } from "react-icons/lu";
-import { MdLink, MdModeEdit, MdOutlineSettings } from "react-icons/md";
-import ExternalLink from "../ExternalLink";
-import { useContext } from "react";
+import { AiUtils } from "@/app/utils/aiUtils";
 import { I18nContext } from "@/app/utils/providers/I18nProvider";
-import { useState } from "react";
+import {
+  DefaultTranslations,
+  TranslationProvider,
+} from "@/app/utils/translations/translationInferace";
+import {
+  AiData,
+  ProviderData,
+  TauriAdapter,
+  TranslationData,
+} from "@/app/utils/utils";
+import { useContext, useEffect, useRef, useState } from "react";
+import { AiOutlineGlobal, AiOutlineIdcard } from "react-icons/ai";
 import { FaTimesCircle } from "react-icons/fa";
 import {
   IoMdEye,
@@ -14,21 +20,10 @@ import {
   IoMdLock,
   IoMdUnlock,
 } from "react-icons/io";
-import {
-  AiData,
-  ProviderData,
-  TauriAdapter,
-  TranslationData,
-} from "@/app/utils/utils";
-import { ReactNode } from "react";
-import { useEffect } from "react";
-import { useRef } from "react";
-import {
-  DefaultTranslations,
-  TranslationProvider,
-} from "@/app/utils/translations/translationInferace";
-import { AiUtils } from "@/app/utils/aiUtils";
+import { LuBrainCircuit, LuKeyRound } from "react-icons/lu";
+import { MdLink, MdModeEdit, MdOutlineSettings } from "react-icons/md";
 import { RiResetLeftFill } from "react-icons/ri";
+import ExternalLink from "../ExternalLink";
 
 /**
  * 默认英文的AI翻译提示词
