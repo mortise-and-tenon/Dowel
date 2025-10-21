@@ -42,6 +42,32 @@ const DEFAULT_EN_SYSTEM_PROMPT =
 const DEFAULT_ZH_SYSTEM_PROMPT =
   "你是一个专业的翻译引擎，请把文字翻译成口语化、专业、优雅、流畅的内容，没有机器翻译的风格。你必须只翻译文本内容，不要解释它。";
 
+/**
+ * 网页翻译用的提示词
+ */
+const DEFAULT_AI_PROMPT = `你是一个专业的翻译引擎，负责将输入的 HTML 内容转换为指定语言的Markdown格式。请严格遵循以下规则进行处理：
+
+处理规则：
+1. 保留符合 markdown 格式的 HTML 结构：仅将HTML标签转换为对应的Markdown格式，标签本身及属性不保留且不翻译
+2. 精准翻译文本：将文本内容翻译为指定语言，确保：
+   - 口语化自然表达
+   - 专业术语准确
+   - 行文优雅流畅
+   - 完全避免机器翻译痕迹
+
+输出要求：
+- 直接输出转换后的Markdown结果
+- 不添加任何解释说明
+- 保持原始文档的层级结构
+- 确保格式转换完整准确
+
+禁止事项：
+- 不得翻译HTML标签及属性
+- 不得保留未转换的HTML标签
+- 不得在输出中添加额外解释说明
+
+请直接输出符合要求的Markdown格式翻译结果。`;
+
 export default function Translation() {
   const { i18n, locale } = useContext(I18nContext);
 
@@ -263,6 +289,7 @@ export default function Translation() {
     model: "",
     prompt:
       locale === "zh" ? DEFAULT_ZH_SYSTEM_PROMPT : DEFAULT_EN_SYSTEM_PROMPT,
+    web_prompt: DEFAULT_AI_PROMPT,
     on: false,
   });
 
@@ -304,13 +331,22 @@ export default function Translation() {
    * 修改提示词内容
    * @param e
    */
-  const onChangePrompt = (e: any) => {
-    setAi((pre) => {
-      return {
-        ...pre,
-        prompt: e.target.value,
-      };
-    });
+  const onChangePrompt = (e: any, type: string) => {
+    if (type === "text") {
+      setAi((pre) => {
+        return {
+          ...pre,
+          prompt: e.target.value,
+        };
+      });
+    } else if (type === "web") {
+      setAi((pre) => {
+        return {
+          ...pre,
+          web_prompt: e.target.value,
+        };
+      });
+    }
   };
 
   /**
@@ -365,29 +401,49 @@ export default function Translation() {
   };
 
   /**
-   * 提示词可编辑状态
+   * 文本提示词可编辑状态
    */
-  const [isEdit, setIsEdit] = useState(false);
+  const [isTextEdit, setIsTextEdit] = useState(false);
+
+  /**
+   * 网页提示词可编辑状态
+   */
+  const [isWebEdit, setIsWebEdit] = useState(false);
 
   /**
    * 变更提示词编辑状态
    * @param e
    */
-  const onChangeEdit = (e: any) => {
-    setIsEdit(e.target.checked);
+  const onChangeEdit = (e: any, type: string) => {
+    if (type === "text") {
+      setIsTextEdit(e.target.checked);
+    } else if (type === "web") {
+      setIsWebEdit(e.target.checked);
+    }
   };
 
   /**
    * 重置提示词为默认
    */
-  const onResetPrompt = () => {
-    setAi((pre) => {
-      return {
-        ...pre,
-        prompt:
-          locale === "zh" ? DEFAULT_ZH_SYSTEM_PROMPT : DEFAULT_EN_SYSTEM_PROMPT,
-      };
-    });
+  const onResetPrompt = (type: string) => {
+    if (type === "text") {
+      setAi((pre) => {
+        return {
+          ...pre,
+          prompt:
+            locale === "zh"
+              ? DEFAULT_ZH_SYSTEM_PROMPT
+              : DEFAULT_EN_SYSTEM_PROMPT,
+        };
+      });
+    } else if (type === "web") {
+      setAi((pre) => {
+        return {
+          ...pre,
+          web_prompt: DEFAULT_AI_PROMPT,
+        };
+      });
+    }
   };
 
   /**
@@ -563,7 +619,7 @@ export default function Translation() {
             </span>
           </div>
         </label>
-        <div className="tab-content bg-base-100 border-base-300 p-6">
+        <div className="tab-content bg-base-100 border-base-300 p-6 overflow-y-auto hide-scrollbar">
           <div className="flex justify-end items-center pb-4">
             <div
               className="tooltip tooltip-left"
@@ -616,7 +672,7 @@ export default function Translation() {
               <legend className="fieldset-legend">
                 {i18n("ai.prompt")}
                 <div>
-                  {isEdit ? (
+                  {isTextEdit ? (
                     <IoMdUnlock className="text-lg text-success" />
                   ) : (
                     <IoMdLock className="text-lg text-error" />
@@ -626,7 +682,7 @@ export default function Translation() {
               <div className="flex items-center space-x-2">
                 <button
                   className="btn btn-sm btn-soft btn-primary"
-                  onClick={onResetPrompt}
+                  onClick={(e) => onResetPrompt("text")}
                 >
                   <RiResetLeftFill className="text-lg" />
                   {i18n("common.reset")}
@@ -635,10 +691,12 @@ export default function Translation() {
                   <input
                     type="checkbox"
                     className="toggle toggle-success"
-                    checked={isEdit}
-                    onChange={onChangeEdit}
+                    checked={isTextEdit}
+                    onChange={(e) => onChangeEdit(e, "text")}
                   />
-                  <MdModeEdit className={`${isEdit ? "text-success" : ""}`} />
+                  <MdModeEdit
+                    className={`${isTextEdit ? "text-success" : ""}`}
+                  />
                 </label>
               </div>
             </div>
@@ -646,8 +704,49 @@ export default function Translation() {
               className="textarea h-40 max-h-40 w-full focus:outline-none"
               placeholder={i18n("ai.input_prompt")}
               value={ai?.prompt}
-              onChange={onChangePrompt}
-              disabled={!isEdit}
+              onChange={(e) => onChangePrompt(e, "text")}
+              disabled={!isTextEdit}
+            ></textarea>
+          </div>
+          <div className="pt-4">
+            <div className="flex justify-between mb-2">
+              <legend className="fieldset-legend">
+                {i18n("ai.web_prompt")}
+                <div>
+                  {isTextEdit ? (
+                    <IoMdUnlock className="text-lg text-success" />
+                  ) : (
+                    <IoMdLock className="text-lg text-error" />
+                  )}
+                </div>
+              </legend>
+              <div className="flex items-center space-x-2">
+                <button
+                  className="btn btn-sm btn-soft btn-primary"
+                  onClick={(e) => onResetPrompt("web")}
+                >
+                  <RiResetLeftFill className="text-lg" />
+                  {i18n("common.reset")}
+                </button>
+                <label className="label">
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-success"
+                    checked={isWebEdit}
+                    onChange={(e) => onChangeEdit(e, "web")}
+                  />
+                  <MdModeEdit
+                    className={`${isWebEdit ? "text-success" : ""}`}
+                  />
+                </label>
+              </div>
+            </div>
+            <textarea
+              className="textarea h-40 max-h-40 w-full focus:outline-none"
+              placeholder={i18n("ai.input_prompt")}
+              value={ai?.web_prompt}
+              onChange={(e) => onChangePrompt(e, "web")}
+              disabled={!isWebEdit}
             ></textarea>
           </div>
           <div className="flex justify-end mt-4">

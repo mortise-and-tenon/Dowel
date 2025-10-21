@@ -59,8 +59,9 @@
     "name_duplicated": "Name Duplicated",
     "model": "Model",
     "select_model": "Select Model",
-    "prompt": "Prompt",
-    "input_prompt": "Input prompt"
+    "prompt": "Text Translation Prompt",
+    "input_prompt": "Input prompt",
+    "web_prompt": "Webpage Translation Prompt"
   },
   "general": {
     "appearance": "Appearance",

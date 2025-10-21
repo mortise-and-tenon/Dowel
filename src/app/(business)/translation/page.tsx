@@ -1,6 +1,7 @@
 "use client";
 import { AiUtils } from "@/app/utils/aiUtils";
 import { I18nContext } from "@/app/utils/providers/I18nProvider";
+import { TranslateUtils } from "@/app/utils/translateUtils";
 import { AliTranslation } from "@/app/utils/translations/aliTranslation";
 import { BaiduTranslation } from "@/app/utils/translations/baiduTranslation";
 import {
@@ -13,9 +14,13 @@ import {
 import { AiData, TauriAdapter, TranslationData } from "@/app/utils/utils";
 import { useRef } from "react";
 import { ReactNode, useContext, useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { GoArrowSwitch } from "react-icons/go";
 import { MdAutoAwesome, MdOutlineTranslate } from "react-icons/md";
 import { RiFileCopyLine } from "react-icons/ri";
+import ReactMarkdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight"; // 代码高亮
+import "highlight.js/styles/github-dark.css"; // 代码高亮主题
 
 type TranslationDisplay = {
   name: string;
@@ -32,6 +37,8 @@ export default function Translation() {
   const adapter = new TauriAdapter();
 
   const aiUtils = new AiUtils();
+
+  const translateUtils = new TranslateUtils();
 
   /**
    * 原文文本输入框
@@ -155,10 +162,10 @@ export default function Translation() {
         translationData.map((item) => {
           if (item.ai && aiData) {
             try {
-              const msg = User_Msg_Format.replace("$target", target).replace(
-                "$original",
-                originalText
-              );
+              const msg = User_Msg_Format.replace(
+                "$target_txt",
+                target
+              ).replace("$original_txt", originalText);
               return aiUtils
                 .singleCompletions(aiData.name, msg)
                 .then((result) => {
@@ -193,6 +200,44 @@ export default function Translation() {
     }
   };
 
+  /**
+   * AI 独立的译文
+   */
+  const [aiTranslatedText, setAiTranslatedText] = useState("");
+
+  /**
+   * AI 独立翻译加载状态
+   */
+  const [aiLoading, setAiLoading] = useState(false);
+
+  /**
+   * 独立的AI翻译
+   */
+  const onAiTranslate = async () => {
+    try {
+      setAiLoading(true);
+      // 调用流式工具函数（严格匹配参数类型）
+      await aiUtils.singleStreamCompletions({
+        target: target,
+        message: originalText,
+        ai_name: aiData ? aiData.name : "",
+        onChunk: (content: string) => {
+          flushSync(() => {
+            setAiTranslatedText((pre) => pre + content);
+          });
+        },
+        onComplete: () => {
+          setAiLoading(false);
+        },
+        onError: (error: Error) => {
+          setAiLoading(false);
+        },
+      });
+    } catch (error: any) {
+      console.error("翻译失败:", error.message);
+    }
+  };
+
   const translateTextRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   /**
@@ -217,6 +262,17 @@ export default function Translation() {
   };
 
   /**
+   * 复制AI翻译网页的译文
+   */
+  const onCopyAi = async () => {
+    try {
+      await navigator.clipboard.writeText(aiTranslatedText);
+    } catch (err) {
+      console.error(`复制失败:`, err);
+    }
+  };
+
+  /**
    * 输入原文
    * @param e
    */
@@ -224,6 +280,9 @@ export default function Translation() {
     setOriginalText(e.target.value);
 
     setEnableBtn(e.target.value != "");
+
+    const value = translateUtils.isUrl(e.target.value);
+    setIsUrl(value);
   };
 
   /**
@@ -250,6 +309,24 @@ export default function Translation() {
    */
   const onSelectTarget = (e: any) => {
     setTarget(e.target.value);
+  };
+
+  /**
+   * 翻译内容是否为Url
+   */
+  const [isUrl, setIsUrl] = useState(false);
+
+  /**
+   * 是否展示为markdown风格
+   */
+  const [showMd, setShowMd] = useState(true);
+
+  /**
+   * 切换markdown展示
+   * @param e
+   */
+  const onChangeShowMd = (e: any) => {
+    setShowMd(e.target.checked);
   };
 
   return (
@@ -292,51 +369,83 @@ export default function Translation() {
               ))}
             </select>
           </div>
-          <button
-            className="btn btn-outline btn-primary ml-2"
-            onClick={onTranslate}
-            disabled={!enableBtn}
-          >
-            <MdOutlineTranslate className="text-2xl" />
-          </button>
+          {!isUrl ? (
+            <button
+              className="btn btn-outline btn-primary ml-2"
+              onClick={onTranslate}
+              disabled={!enableBtn}
+            >
+              <MdOutlineTranslate className="text-2xl" />
+            </button>
+          ) : (
+            <button
+              className="btn btn-outline btn-primary ml-2"
+              onClick={onAiTranslate}
+              disabled={!enableBtn}
+            >
+              <MdOutlineTranslate className="text-lg" />
+              AI
+            </button>
+          )}
         </div>
       </div>
-      <div className="flex-1 p-4 space-y-2 overflow-y-auto hide-scrollbar">
-        {translationData.map((item, index) => (
+      <div className="flex-1 max-w-[50%] p-4 space-y-2 overflow-y-auto hide-scrollbar">
+        {isUrl && (
           <div
-            className={`collapse collapse-arrow ${
-              index == 0 && "collapse-open"
-            } bg-base-300 border-base-300 border`}
-            key={item.name}
+            className={`collapse collapse-arrow collapse-open bg-base-300 border-base-300 border`}
           >
-            <input type="checkbox" />
             <div className="collapse-title bg-base-200">
               <div className="flex items-center">
-                <div className="w-20 flex justify-center">{item.logo}</div>
+                <div className="w-20 flex justify-center">
+                  {translationData[0].logo}
+                </div>
                 <span className="pl-2 font-semibold">
-                  {i18n(item.i18nName)}
+                  {i18n(translationData[0].i18nName)}
                 </span>
               </div>
             </div>
-            <div className="collapse-content bg-base-100">
-              <div className="pt-2">
-                {item.loading ? (
-                  <div className="loading loading-dots text-primary"></div>
+            <div className="collapse-content bg-base-100 min-w-0">
+              <div className="pt-2 w-full">
+                {showMd ? (
+                  <div className="break-all max-h-40 w-full overflow-y-auto">
+                    <div className="pointer-events-none">
+                      <ReactMarkdown
+                        // 启用代码高亮
+                        rehypePlugins={[rehypeHighlight]}
+                        // 处理空内容
+                        children={aiTranslatedText || ""}
+                      />
+                    </div>
+                  </div>
                 ) : (
                   <div
+                    className="break-all max-h-40 overflow-y-auto"
                     ref={(el: HTMLDivElement | null) => {
-                      translateTextRefs.current[index] = el;
+                      translateTextRefs.current[0] = el;
                     }}
                   >
-                    {item.translatedText}
+                    {aiTranslatedText}
                   </div>
                 )}
 
-                <div className="flex justify-end">
+                {aiLoading && (
+                  <div className="loading loading-dots text-primary"></div>
+                )}
+
+                <div className="flex justify-between">
+                  <label className="label">
+                    <input
+                      type="checkbox"
+                      checked={showMd}
+                      onChange={onChangeShowMd}
+                      className="toggle toggle-primary"
+                    />
+                    Markdown
+                  </label>
                   <button
                     className="btn btn-ghost btn-primary"
-                    disabled={item.translatedText == ""}
-                    onClick={(e) => onCopy(index)}
+                    disabled={aiTranslatedText == ""}
+                    onClick={onCopyAi}
                   >
                     <RiFileCopyLine className="text-lg" />
                   </button>
@@ -344,7 +453,65 @@ export default function Translation() {
               </div>
             </div>
           </div>
-        ))}
+        )}
+        {!isUrl &&
+          translationData.map((item, index) => (
+            <div
+              className={`collapse collapse-arrow ${
+                index == 0 && "collapse-open"
+              } w-full bg-base-300 border-base-300 border`}
+              key={item.name}
+            >
+              <input type="checkbox" />
+              <div className="collapse-title bg-base-200">
+                <div className="flex items-center">
+                  <div className="w-20 flex justify-center">{item.logo}</div>
+                  <span className="pl-2 font-semibold">
+                    {i18n(item.i18nName)}
+                  </span>
+                </div>
+              </div>
+              <div className="w-full collapse-content bg-base-100">
+                <div className="pt-2">
+                  {item.loading ? (
+                    <div className="loading loading-dots text-primary"></div>
+                  ) : (
+                    <div
+                      className="break-all max-h-40 overflow-y-auto"
+                      ref={(el: HTMLDivElement | null) => {
+                        translateTextRefs.current[index] = el;
+                      }}
+                    >
+                      {item.translatedText}
+                    </div>
+                  )}
+                  {item.ai && (
+                    <div
+                      className="break-all max-h-40 overflow-y-auto"
+                      ref={(el: HTMLDivElement | null) => {
+                        translateTextRefs.current[index] = el;
+                      }}
+                    >
+                      {item.translatedText}
+                    </div>
+                  )}
+                  {aiLoading && (
+                    <div className="loading loading-dots text-primary"></div>
+                  )}
+
+                  <div className="flex justify-end">
+                    <button
+                      className="btn btn-ghost btn-primary"
+                      disabled={item.translatedText == ""}
+                      onClick={(e) => onCopy(index)}
+                    >
+                      <RiFileCopyLine className="text-lg" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );

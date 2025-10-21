@@ -59,8 +59,9 @@
     "name_duplicated": "名称重复",
     "model": "模型",
     "select_model": "选择模型",
-    "prompt": "提示词",
-    "input_prompt": "填写提示词"
+    "prompt": "文本翻译提示词",
+    "input_prompt": "填写提示词",
+    "web_prompt": "网页翻译提示词"
   },
   "general": {
     "appearance": "外观",

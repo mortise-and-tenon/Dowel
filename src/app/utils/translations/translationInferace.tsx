@@ -99,7 +99,7 @@ export const requestGetTranslationHttp = async (api: string) => {
 /**
  * 对话内容模板
  */
-export const User_Msg_Format = "Translate into $target:$original";
+export const User_Msg_Format = "Translate into $target_txt:$original_txt";
 
 /**
  * 常用语言代码

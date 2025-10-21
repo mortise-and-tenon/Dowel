@@ -8,6 +8,9 @@
 - [js-cookie](https://github.com/js-cookie/js-cookie)
 - [theme-change](https://github.com/saadeghi/theme-change)
 - [crypto-js](https://github.com/brix/crypto-js)
+- [validator](https://github.com/validatorjs/validator.js)
+- [react-markdown](https://github.com/remarkjs/react-markdown)
+- rehype-highlight highlight.js
 
 # 运行、编译环境
 
