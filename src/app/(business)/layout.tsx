@@ -86,7 +86,7 @@ export default function HomeLayout({
       >
         <div className="flex items-center">
           <div className="w-14 flex justify-center items-center">
-            <Image src="/truss.png" width={30} height={30} alt="logo" />
+            <img src="/truss.png" width={30} height={30} alt="logo" />
           </div>
           <span className="font-black">{i18n(menuTitle)}</span>
         </div>

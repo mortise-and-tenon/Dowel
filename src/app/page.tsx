@@ -39,7 +39,7 @@ export default function Home() {
           className="flex flex-col justify-center items-center"
         >
           <div>
-            <Image src="/truss.png" width={80} height={80} alt="logo" />
+            <img src="/truss.png" width={80} height={80} alt="logo" />
           </div>
 
           {Object.keys(translation).length == 0 ? (

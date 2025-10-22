@@ -81,7 +81,7 @@ export default function About() {
           <div className="flex justify-between items-center">
             <div className="flex">
               <div>
-                <Image src="/truss.png" width={100} height={100} alt="logo" />
+                <img src="/truss.png" width={100} height={100} alt="logo" />
               </div>
               <div className="flex flex-col space-y-2 pl-2">
                 <h1 className="text-xl font-bold">{i18n("app_name")}</h1>
