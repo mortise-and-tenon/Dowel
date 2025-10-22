@@ -38,9 +38,7 @@ jobs:
         run: npm install
 
       - name: Build Tauri app with npx
-        run: |
-          set -x  # 开启调试模式
-          npm run build || echo "Build failed, but continuing..."
+        run: npm run build
 
       - name: Read version from tauri.conf.json
         id: read_version
