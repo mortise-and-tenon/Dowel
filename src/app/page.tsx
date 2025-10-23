@@ -5,6 +5,7 @@ import { themeChange } from "theme-change";
 import { GlobalContext } from "./utils/providers/GlobalProvider";
 import { TauriAdapter } from "./utils/utils";
 import { useTranslation } from "react-i18next";
+import TauriSystemTray from "./components/SystemTray";
 
 export default function Home() {
   const { setLocale } = useContext(GlobalContext);

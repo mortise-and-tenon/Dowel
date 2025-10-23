@@ -12,6 +12,11 @@
     "translation": "翻译",
     "setting": "设置"
   },
+  "tray": {
+    "show": "显示",
+    "hide": "隐藏",
+    "quit": "退出"
+  },
   "common": {
     "confirm": "确定",
     "cancel": "取消",

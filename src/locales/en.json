@@ -12,6 +12,11 @@
     "translation": "Translation",
     "setting": "Setting"
   },
+  "tray": {
+    "show": "Show",
+    "hide": "Hide",
+    "quit": "Quit"
+  },
   "common": {
     "confirm": "Ok",
     "cancel": "Cancel",

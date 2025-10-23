@@ -53,11 +53,11 @@ export default function HomeLayout({
   };
 
   /**
-   * 点击关闭
+   * 点击关闭/隐藏
    */
   const onClickClose = () => {
     if (appWindow != null) {
-      appWindow.close();
+      appWindow.hide();
     }
   };
 
