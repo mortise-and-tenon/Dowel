@@ -20,13 +20,13 @@ export default function Setting() {
   return (
     <div className="flex h-full">
       <div className="bg-base-100 w-60 border-r-2 border-base-300">
-        <SettingMenu onSelectMenu={onSelectMenu} />
+        {/* <SettingMenu onSelectMenu={onSelectMenu} /> */}
       </div>
       <div className="flex-1 bg-base-300 h-full">
-        {selectedMenu === "translation" && <Translation />}
+        {/* {selectedMenu === "translation" && <Translation />}
         {selectedMenu === "ai" && <Ai />}
         {selectedMenu === "general" && <General />}
-        {selectedMenu === "about" && <About />}
+        {selectedMenu === "about" && <About />} */}
       </div>
     </div>
   );
