@@ -1,5 +1,4 @@
 import { AiUtils } from "@/app/utils/aiUtils";
-import { I18nContext } from "@/app/utils/providers/I18nProvider";
 import {
   DefaultTranslations,
   TranslationProvider,
@@ -11,6 +10,7 @@ import {
   TranslationData,
 } from "@/app/utils/utils";
 import { useContext, useEffect, useRef, useState } from "react";
+import { I18nContext, useTranslation } from "react-i18next";
 import { AiOutlineGlobal, AiOutlineIdcard } from "react-icons/ai";
 import { FaTimesCircle } from "react-icons/fa";
 import {
@@ -24,6 +24,7 @@ import { LuBrainCircuit, LuKeyRound } from "react-icons/lu";
 import { MdLink, MdModeEdit, MdOutlineSettings } from "react-icons/md";
 import { RiResetLeftFill } from "react-icons/ri";
 import ExternalLink from "../ExternalLink";
+import { GlobalContext } from "@/app/utils/providers/GlobalProvider";
 
 /**
  * 默认英文的AI翻译提示词
@@ -64,7 +65,8 @@ const DEFAULT_AI_PROMPT = `你是一个专业的翻译引擎，负责将输入�
 请直接输出符合要求的Markdown格式翻译结果。`;
 
 export default function Translation() {
-  const { i18n, locale } = useContext(I18nContext);
+  const { locale } = useContext(GlobalContext);
+  const { t } = useTranslation();
 
   const adapter = new TauriAdapter();
 
@@ -471,14 +473,14 @@ export default function Translation() {
           <div className="flex items-center space-x-2">
             <AiOutlineGlobal className="text-primary text-lg" />
             <span className="font-semibold">
-              {i18n("translation.web_translate")}
+              {t("translation.web_translate")}
             </span>
           </div>
         </label>
         <div className="tab-content bg-base-100 border-base-300 p-4 overflow-y-auto hide-scrollbar">
           <ul className="list">
             <li className="p-2 text-xs opacity-60 tracking-wide">
-              <label className="label">{i18n("translation.enable")}</label>
+              <label className="label">{t("translation.enable")}</label>
             </li>
 
             {translationConfigData.map((item) => (
@@ -488,7 +490,7 @@ export default function Translation() {
                 </div>
                 <div className="flex">
                   <div className="flex items-center font-semibold">
-                    {i18n(item.i18nName)}
+                    {t(item.i18nName)}
                   </div>
                   {item.link && (
                     <ExternalLink url={item.link}>
@@ -526,7 +528,7 @@ export default function Translation() {
                 {selectedTranslation ? selectedTranslation.logo : <></>}
               </div>
               <span className="font-bold text-2xl">
-                {i18n("translation.config")}
+                {t("translation.config")}
               </span>
             </h3>
             <div className="py-4">
@@ -546,7 +548,7 @@ export default function Translation() {
                       />
                     </label>
                     <p className="validator-hint">
-                      {i18n("translation.url_error_tip")}
+                      {t("translation.url_error_tip")}
                     </p>
                   </>
                 )}
@@ -581,14 +583,14 @@ export default function Translation() {
                 {displayMsg && (
                   <div role="alert" className="alert alert-error">
                     <FaTimesCircle className="text-2xl" />
-                    <span>{i18n(displayMsg)}</span>
+                    <span>{t(displayMsg)}</span>
                   </div>
                 )}
               </form>
             </div>
             <div className="modal-action">
               <button className="btn" onClick={onCancelModal}>
-                {i18n("common.cancel")}
+                {t("common.cancel")}
               </button>
               <button
                 className={`btn btn-primary ${
@@ -599,7 +601,7 @@ export default function Translation() {
                 }`}
                 onClick={onConfirmModal}
               >
-                {i18n("common.confirm")}
+                {t("common.confirm")}
               </button>
             </div>
           </div>
@@ -610,7 +612,7 @@ export default function Translation() {
           <div className="flex items-center space-x-2">
             <LuBrainCircuit className="text-primary text-lg" />
             <span className="font-semibold">
-              {i18n("translation.ai_translate")}
+              {t("translation.ai_translate")}
             </span>
           </div>
         </label>
@@ -618,7 +620,7 @@ export default function Translation() {
           <div className="flex justify-end items-center pb-4">
             <div
               className="tooltip tooltip-left"
-              data-tip={ai.on ? i18n("common.enable") : i18n("common.disable")}
+              data-tip={ai.on ? t("common.enable") : t("common.disable")}
             >
               <input
                 type="checkbox"
@@ -631,10 +633,10 @@ export default function Translation() {
           </div>
           <div className="flex space-x-2">
             <label className="select w-full focus-within:outline-none">
-              <span className="label">{i18n("ai.provider")}</span>
+              <span className="label">{t("ai.provider")}</span>
               <select value={ai?.provider} onChange={onSelectProvider}>
                 <option value={"default"} disabled={true}>
-                  {i18n("ai.select_provider")}
+                  {t("ai.select_provider")}
                 </option>
                 {providers.map((item) => (
                   <option key={item.name} value={item.name}>
@@ -644,7 +646,7 @@ export default function Translation() {
               </select>
             </label>
             <label className="select w-full focus-within:outline-none">
-              <span className="label">{i18n("ai.model")}</span>
+              <span className="label">{t("ai.model")}</span>
               <select
                 className="select"
                 value={ai?.model}
@@ -652,7 +654,7 @@ export default function Translation() {
                 disabled={models.length == 0}
               >
                 <option value={"default"} disabled={true}>
-                  {i18n("ai.select_model")}
+                  {t("ai.select_model")}
                 </option>
                 {models.map((item: any) => (
                   <option key={`${item.id}-${item.owned_by}`} value={item.id}>
@@ -665,7 +667,7 @@ export default function Translation() {
           <div className="pt-4">
             <div className="flex justify-between mb-2">
               <legend className="fieldset-legend">
-                {i18n("ai.prompt")}
+                {t("ai.prompt")}
                 <div>
                   {isTextEdit ? (
                     <IoMdUnlock className="text-lg text-success" />
@@ -680,7 +682,7 @@ export default function Translation() {
                   onClick={(e) => onResetPrompt("text")}
                 >
                   <RiResetLeftFill className="text-lg" />
-                  {i18n("common.reset")}
+                  {t("common.reset")}
                 </button>
                 <label className="label">
                   <input
@@ -697,7 +699,7 @@ export default function Translation() {
             </div>
             <textarea
               className="textarea h-40 max-h-40 w-full focus:outline-none"
-              placeholder={i18n("ai.input_prompt")}
+              placeholder={t("ai.input_prompt")}
               value={ai?.prompt}
               onChange={(e) => onChangePrompt(e, "text")}
               disabled={!isTextEdit}
@@ -706,7 +708,7 @@ export default function Translation() {
           <div className="pt-4">
             <div className="flex justify-between mb-2">
               <legend className="fieldset-legend">
-                {i18n("ai.web_prompt")}
+                {t("ai.web_prompt")}
                 <div>
                   {isTextEdit ? (
                     <IoMdUnlock className="text-lg text-success" />
@@ -721,7 +723,7 @@ export default function Translation() {
                   onClick={(e) => onResetPrompt("web")}
                 >
                   <RiResetLeftFill className="text-lg" />
-                  {i18n("common.reset")}
+                  {t("common.reset")}
                 </button>
                 <label className="label">
                   <input
@@ -738,7 +740,7 @@ export default function Translation() {
             </div>
             <textarea
               className="textarea h-40 max-h-40 w-full focus:outline-none"
-              placeholder={i18n("ai.input_prompt")}
+              placeholder={t("ai.input_prompt")}
               value={ai?.web_prompt}
               onChange={(e) => onChangePrompt(e, "web")}
               disabled={!isWebEdit}
@@ -750,7 +752,7 @@ export default function Translation() {
               onClick={onSaveAi}
               disabled={!enabledBtn}
             >
-              {i18n("common.confirm")}
+              {t("common.confirm")}
             </button>
           </div>
         </div>

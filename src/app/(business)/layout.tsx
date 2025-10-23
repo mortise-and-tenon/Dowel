@@ -1,6 +1,5 @@
 "use client";
 import { getCurrentWindow, Window } from "@tauri-apps/api/window";
-import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import {
   VscChromeClose,
@@ -10,8 +9,9 @@ import {
 } from "react-icons/vsc";
 import Menu from "../components/Menu";
 import ThemeChanger from "../components/ThemeSwitcher";
-import { I18nContext } from "../utils/providers/I18nProvider";
 import "../globals.css";
+import { GlobalContext } from "../utils/providers/GlobalProvider";
+import { useTranslation } from "react-i18next";
 
 export default function HomeLayout({
   children,
@@ -61,7 +61,7 @@ export default function HomeLayout({
     }
   };
 
-  const { i18n } = useContext(I18nContext);
+  const { t } = useTranslation();
 
   /**
    * 选中的菜单名称
@@ -88,7 +88,7 @@ export default function HomeLayout({
           <div className="w-14 flex justify-center items-center">
             <img src="/truss.png" width={30} height={30} alt="logo" />
           </div>
-          <span className="font-black">{i18n(menuTitle)}</span>
+          <span className="font-black">{t(menuTitle)}</span>
         </div>
         <div className="h-full flex items-center">
           <ThemeChanger />
@@ -115,7 +115,7 @@ export default function HomeLayout({
           <button
             title="close"
             onClick={onClickClose}
-            className="h-full hover:bg-primary/20 hover:text-primary 
+            className="h-full hover:bg-error hover:text-white 
                     transition-all duration-200 px-2"
           >
             <VscChromeClose className="text-2xl" />

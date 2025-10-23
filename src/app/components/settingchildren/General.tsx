@@ -1,8 +1,9 @@
 "use client";
 
-import { I18nContext } from "@/app/utils/providers/I18nProvider";
+import { GlobalContext } from "@/app/utils/providers/GlobalProvider";
 import { TauriAdapter } from "@/app/utils/utils";
 import { useContext, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { themeChange } from "theme-change";
 
 /**
@@ -10,9 +11,11 @@ import { themeChange } from "theme-change";
  * @returns
  */
 export default function General() {
-  const { i18n, locale, setLocale } = useContext(I18nContext);
+  const { locale, setLocale } = useContext(GlobalContext);
 
   const adapter = new TauriAdapter();
+
+  const { i18n, t } = useTranslation();
 
   /**
    * 语言列表
@@ -97,6 +100,7 @@ export default function General() {
    * @param e
    */
   const onSelectLang = (e: any) => {
+    i18n.changeLanguage(e.target.value);
     setLocale(e.target.value);
     adapter.writeAppData({ locale: e.target.value });
   };
@@ -106,11 +110,11 @@ export default function General() {
       <div className="card bg-base-100 w-full shadow-sm">
         <div className="card-body">
           <div className="flex justify-between">
-            <h3 className="card-title">{i18n("general.appearance")}</h3>
+            <h3 className="card-title">{t("general.appearance")}</h3>
           </div>
           <hr className="border-base-300" />
           <div className="flex justify-between items-center">
-            <span>{i18n("general.language")}</span>
+            <span>{t("general.language")}</span>
             <select
               value={locale}
               className="select w-40 focus:outline-none"
@@ -124,22 +128,22 @@ export default function General() {
             </select>
           </div>
           <div className="flex justify-between items-center">
-            <span>{i18n("general.theme")}</span>
+            <span>{t("general.theme")}</span>
             <select
               data-choose-theme
               defaultValue="light"
               className="select w-40 focus:outline-none"
             >
-              <option disabled={true}>----{i18n("themes.light")}----</option>
+              <option disabled={true}>----{t("themes.light")}----</option>
               {lightThemes.map((item) => (
                 <option key={item.value} value={item.value}>
-                  {i18n(item.name)}
+                  {t(item.name)}
                 </option>
               ))}
-              <option disabled={true}>----{i18n("themes.dark")}----</option>
+              <option disabled={true}>----{t("themes.dark")}----</option>
               {darkThemes.map((item) => (
                 <option key={item.value} value={item.value}>
-                  {i18n(item.name)}
+                  {t(item.name)}
                 </option>
               ))}
             </select>

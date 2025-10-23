@@ -1,16 +1,17 @@
 "use client";
 
 import { AiUtils } from "@/app/utils/aiUtils";
-import { I18nContext } from "@/app/utils/providers/I18nProvider";
+import { GlobalContext } from "@/app/utils/providers/GlobalProvider";
 import { PlatformAdapter, ProviderData, TauriAdapter } from "@/app/utils/utils";
 import { useContext, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FaTimesCircle } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { MdAdd, MdOutlineSearch, MdToggleOn } from "react-icons/md";
 
 export default function Ai() {
-  const { i18n } = useContext(I18nContext);
+  const { t } = useTranslation();
 
   /**
    * 系统层工具
@@ -300,7 +301,7 @@ export default function Ai() {
           <input
             type="search"
             className="grow"
-            placeholder={i18n("ai.search_provider")}
+            placeholder={t("ai.search_provider")}
             onChange={onSearchProvider}
           />
           <MdOutlineSearch className="text-2xl" />
@@ -338,23 +339,23 @@ export default function Ai() {
         </div>
         <button className="btn mb-2" onClick={onShowModal}>
           <MdAdd className="text-2xl" />
-          {i18n("ai.add_provider")}
+          {t("ai.add_provider")}
         </button>
         <dialog
           id="addModal"
           className={`modal ${showModal ? "modal-open" : ""} `}
         >
           <div className="modal-box">
-            <h3 className="font-bold text-lg">{i18n("ai.add_provider")}</h3>
+            <h3 className="font-bold text-lg">{t("ai.add_provider")}</h3>
             <div className="py-4">
               <form method="dialog">
                 <fieldset className="fieldset">
-                  <legend className="fieldset-legend">{i18n("ai.name")}</legend>
+                  <legend className="fieldset-legend">{t("ai.name")}</legend>
                   <input
                     ref={inputRef}
                     type="text"
                     className="input w-full focus:outline-none"
-                    placeholder={i18n("ai.name_placeholder")}
+                    placeholder={t("ai.name_placeholder")}
                     value={newProviderName}
                     onChange={onInputProviderName}
                   />
@@ -362,20 +363,20 @@ export default function Ai() {
                 {displayMsg && (
                   <div role="alert" className="alert alert-error">
                     <FaTimesCircle className="text-2xl" />
-                    <span>{i18n(displayMsg)}</span>
+                    <span>{t(displayMsg)}</span>
                   </div>
                 )}
               </form>
             </div>
             <div className="modal-action">
               <button className="btn" onClick={onHideModal}>
-                {i18n("common.cancel")}
+                {t("common.cancel")}
               </button>
               <button
                 className={`btn btn-primary ${enableAdd ? "" : "btn-disabled"}`}
                 onClick={onAddProvider}
               >
-                {i18n("common.confirm")}
+                {t("common.confirm")}
               </button>
             </div>
           </div>
@@ -393,7 +394,7 @@ export default function Ai() {
         </div>
         <hr className="border-base-300" />
         <fieldset className="fieldset">
-          <legend className="fieldset-legend">{i18n("ai.api")}</legend>
+          <legend className="fieldset-legend">{t("ai.api")}</legend>
           <input
             type="url"
             ref={apiInputRef}
@@ -401,12 +402,12 @@ export default function Ai() {
             value={newApi}
             required
             onChange={onChangeApi}
-            placeholder={i18n("ai.api")}
+            placeholder={t("ai.api")}
           />
           <p className="label">/v1/chat/completions</p>
         </fieldset>
         <fieldset className="fieldset">
-          <legend className="fieldset-legend">{i18n("ai.key")}</legend>
+          <legend className="fieldset-legend">{t("ai.key")}</legend>
           <div className="join">
             <input
               type={hideKey ? "password" : "text"}
@@ -414,7 +415,7 @@ export default function Ai() {
               value={newKey}
               required
               onChange={onChangeKey}
-              placeholder={i18n("ai.key")}
+              placeholder={t("ai.key")}
             />
             <button className="btn" onClick={onShowOrHideKey}>
               {hideKey ? <IoMdEyeOff /> : <IoMdEye />}
@@ -433,7 +434,7 @@ export default function Ai() {
             ) : (
               <FaTimesCircle className="text-2xl" />
             )}
-            <span>{i18n(checkResult.msg)}</span>
+            <span>{t(checkResult.msg)}</span>
           </div>
         )}
         <div className="flex justify-end pt-2 space-x-2">
@@ -444,7 +445,7 @@ export default function Ai() {
             }`}
             onClick={onCheckProvider}
           >
-            {i18n("ai.test")}
+            {t("ai.test")}
           </button>
           <button
             className={`btn btn-primary ${
@@ -453,7 +454,7 @@ export default function Ai() {
             }`}
             onClick={onSaveProvider}
           >
-            {i18n("common.save")}
+            {t("common.save")}
           </button>
         </div>
       </div>

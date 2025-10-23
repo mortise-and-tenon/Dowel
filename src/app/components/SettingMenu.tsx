@@ -6,7 +6,8 @@ import {
   MdOutlineTranslate,
   MdSettingsVoice,
 } from "react-icons/md";
-import { I18nContext } from "../utils/providers/I18nProvider";
+import { GlobalContext } from "../utils/providers/GlobalProvider";
+import { useTranslation } from "react-i18next";
 
 type SettingMenuData = {
   name: string;
@@ -53,7 +54,7 @@ export default function SettingMenu({
 }: {
   onSelectMenu: (menuName: string) => void;
 }) {
-  const { i18n } = useContext(I18nContext);
+  const { t } = useTranslation();
   const [focusMenu, setFocusMenu] = useState("translation");
 
   /**
@@ -75,7 +76,7 @@ export default function SettingMenu({
             }`}
           >
             {item.icon}
-            {i18n(item.i18nName)}
+            {t(item.i18nName)}
           </a>
         </li>
       ))}

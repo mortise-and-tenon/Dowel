@@ -1,26 +1,24 @@
 "use client";
 import { AiUtils } from "@/app/utils/aiUtils";
-import { I18nContext } from "@/app/utils/providers/I18nProvider";
+import { GlobalContext } from "@/app/utils/providers/GlobalProvider";
 import { TranslateUtils } from "@/app/utils/translateUtils";
 import { AliTranslation } from "@/app/utils/translations/aliTranslation";
 import { BaiduTranslation } from "@/app/utils/translations/baiduTranslation";
 import {
   CommonLangCode,
   DefaultTranslations,
-  LangCode,
   TranslationInterface,
   User_Msg_Format,
 } from "@/app/utils/translations/translationInferace";
 import { AiData, TauriAdapter, TranslationData } from "@/app/utils/utils";
-import { useRef } from "react";
-import { ReactNode, useContext, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { GoArrowSwitch } from "react-icons/go";
 import { MdAutoAwesome, MdOutlineTranslate } from "react-icons/md";
 import { RiFileCopyLine } from "react-icons/ri";
 import ReactMarkdown from "react-markdown";
-import rehypeHighlight from "rehype-highlight"; // 代码高亮
-import "highlight.js/styles/github-dark.css"; // 代码高亮主题
+import rehypeHighlight from "rehype-highlight";
 
 type TranslationDisplay = {
   name: string;
@@ -32,7 +30,9 @@ type TranslationDisplay = {
 };
 
 export default function Translation() {
-  const { i18n, locale } = useContext(I18nContext);
+  const { locale } = useContext(GlobalContext);
+
+  const { t } = useTranslation();
 
   const adapter = new TauriAdapter();
 
@@ -335,7 +335,7 @@ export default function Translation() {
         <textarea
           className="textarea h-60 max-h-60 w-full focus:outline-none"
           ref={sourceTextRef}
-          placeholder={i18n("translation.original")}
+          placeholder={t("translation.original")}
           value={originalText}
           onChange={onChangeOriginal}
         ></textarea>
@@ -346,10 +346,10 @@ export default function Translation() {
               value={source}
               onChange={onSelectSource}
             >
-              <option value="auto">{i18n("langs.auto")}</option>
+              <option value="auto">{t("langs.auto")}</option>
               {CommonLangCode.map((item) => (
                 <option key={`source-${item}`} value={item}>
-                  {i18n(`langs.${item}`)}
+                  {t(`langs.${item}`)}
                 </option>
               ))}
             </select>
@@ -364,7 +364,7 @@ export default function Translation() {
             >
               {CommonLangCode.map((item) => (
                 <option key={`target-${item}`} value={item}>
-                  {i18n(`langs.${item}`)}
+                  {t(`langs.${item}`)}
                 </option>
               ))}
             </select>
@@ -400,7 +400,7 @@ export default function Translation() {
                   {translationData[0].logo}
                 </div>
                 <span className="pl-2 font-semibold">
-                  {i18n(translationData[0].i18nName)}
+                  {t(translationData[0].i18nName)}
                 </span>
               </div>
             </div>
@@ -466,9 +466,7 @@ export default function Translation() {
               <div className="collapse-title bg-base-200">
                 <div className="flex items-center">
                   <div className="w-20 flex justify-center">{item.logo}</div>
-                  <span className="pl-2 font-semibold">
-                    {i18n(item.i18nName)}
-                  </span>
+                  <span className="pl-2 font-semibold">{t(item.i18nName)}</span>
                 </div>
               </div>
               <div className="w-full collapse-content bg-base-100">
