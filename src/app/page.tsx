@@ -1,14 +1,13 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { themeChange } from "theme-change";
 import { GlobalContext } from "./utils/providers/GlobalProvider";
 import { TauriAdapter } from "./utils/utils";
-import { useTranslation } from "react-i18next";
-import TauriSystemTray from "./components/SystemTray";
 
 export default function Home() {
-  const { setLocale } = useContext(GlobalContext);
+  const { setAppConfig } = useContext(GlobalContext);
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -28,7 +27,7 @@ export default function Home() {
   const readAppConfig = async () => {
     const config = await adapter.readAppData();
     if (config) {
-      setLocale(config.locale);
+      setAppConfig(config);
     }
   };
 

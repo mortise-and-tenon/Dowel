@@ -71,7 +71,9 @@
   "general": {
     "appearance": "Appearance",
     "theme": "Theme",
-    "language": "Language"
+    "language": "Language",
+    "tray": "Tray",
+    "close_action": "Minimize to tray when closed"
   },
   "themes": {
     "theme": "主题",

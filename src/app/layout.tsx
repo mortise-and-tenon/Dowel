@@ -7,6 +7,7 @@ import { initI18n } from "./lib/i18n";
 import { GlobalProvider } from "./utils/providers/GlobalProvider";
 import TauriSystemTray from "./components/SystemTray";
 import { TrayIcon, TrayIconEvent } from "@tauri-apps/api/tray";
+import { TauriAdapter } from "./utils/utils";
 
 export default function RootLayout({
   children,
@@ -14,6 +15,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [i18nInstance, setI18nInstance] = useState<any>(null);
+
+  const adapter = new TauriAdapter();
+
+  const [showTray, setShowTray] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -27,22 +32,29 @@ export default function RootLayout({
 
     initializeApp();
 
-    const handleContextMenu = (e: Event) => {
-      e.preventDefault();
-    };
+    readAppData();
 
-    document.addEventListener("contextmenu", handleContextMenu);
-    return () => {
-      document.removeEventListener("contextmenu", handleContextMenu);
-    };
+    // const handleContextMenu = (e: Event) => {
+    //   e.preventDefault();
+    // };
+
+    // document.addEventListener("contextmenu", handleContextMenu);
+    // return () => {
+    //   document.removeEventListener("contextmenu", handleContextMenu);
+    // };
   }, []);
+
+  const readAppData = async () => {
+    const appConfig = await adapter.readAppData();
+    setShowTray(appConfig.showTray);
+  };
 
   return (
     <html lang="en">
       <body className={`antialiased`}>
         {i18nInstance ? (
           <I18nextProvider i18n={i18nInstance}>
-            <TauriSystemTray />
+            {showTray && <TauriSystemTray />}
             <GlobalProvider>{children}</GlobalProvider>
           </I18nextProvider>
         ) : (

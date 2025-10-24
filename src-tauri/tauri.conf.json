@@ -1,7 +1,7 @@
 {
-  "productName": "dowel",
+  "productName": "Dowel",
   "version": "0.1.0",
-  "identifier": "fun.mortnon.dowel.app",
+  "identifier": "fun.mortnon.dowel",
   "build": {
     "frontendDist": "../out",
     "devUrl": "http://localhost:3000",

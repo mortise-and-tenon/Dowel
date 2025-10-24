@@ -71,7 +71,9 @@
   "general": {
     "appearance": "外观",
     "theme": "主题",
-    "language": "语言"
+    "language": "语言",
+    "tray": "托盘",
+    "close_action": "关闭时最小化到托盘"
   },
   "themes": {
     "theme": "主题",

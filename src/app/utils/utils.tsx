@@ -24,6 +24,7 @@ export const decrypt = (ciphertext: string): string => {
 
 export type AppData = {
   locale: string;
+  showTray: boolean;
 };
 
 export type ProviderData = {
@@ -84,6 +85,7 @@ export class TauriAdapter implements PlatformAdapter {
       return {
         app: {
           locale: "zh",
+          showTray: true,
         },
         providers: [],
         translations: [],

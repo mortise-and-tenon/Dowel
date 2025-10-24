@@ -2,16 +2,18 @@
 
 import { GlobalContext } from "@/app/utils/providers/GlobalProvider";
 import { TauriAdapter } from "@/app/utils/utils";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { themeChange } from "theme-change";
+import TauriSystemTray, { TrayId } from "../SystemTray";
+import { TrayIcon } from "@tauri-apps/api/tray";
 
 /**
  * 通用设置页面
  * @returns
  */
 export default function General() {
-  const { locale, setLocale } = useContext(GlobalContext);
+  const { appConfig, setAppConfig } = useContext(GlobalContext);
 
   const adapter = new TauriAdapter();
 
@@ -99,10 +101,31 @@ export default function General() {
    * 选择语言
    * @param e
    */
-  const onSelectLang = (e: any) => {
+  const onSelectLang = async (e: any) => {
     i18n.changeLanguage(e.target.value);
-    setLocale(e.target.value);
-    adapter.writeAppData({ locale: e.target.value });
+    setAppConfig((pre) => {
+      return { ...pre, locale: e.target.value };
+    });
+    await adapter.writeAppData({ ...appConfig, locale: e.target.value });
+  };
+
+  /**
+   * 切换托盘展示/隐藏
+   * @param e
+   */
+  const onChangeTray = async (e: any) => {
+    setAppConfig((pre) => {
+      return { ...pre, showTray: e.target.checked };
+    });
+    await adapter.writeAppData({ ...appConfig, showTray: e.target.checked });
+
+    //隐藏时，销毁现有的托盘
+    if (!e.target.checked) {
+      const currentTray = await TrayIcon.getById(TrayId);
+      if (currentTray) {
+        currentTray.close();
+      }
+    }
   };
 
   return (
@@ -116,7 +139,7 @@ export default function General() {
           <div className="flex justify-between items-center">
             <span>{t("general.language")}</span>
             <select
-              value={locale}
+              value={appConfig.locale}
               className="select w-40 focus:outline-none"
               onChange={onSelectLang}
             >
@@ -147,6 +170,25 @@ export default function General() {
                 </option>
               ))}
             </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="card bg-base-100 w-full shadow-sm mt-4">
+        <div className="card-body">
+          <div className="flex justify-between">
+            <h3 className="card-title">{t("general.tray")}</h3>
+          </div>
+          <hr className="border-base-300" />
+          <div className="flex justify-between items-center">
+            {appConfig.showTray && <TauriSystemTray />}
+            <span>{t("general.close_action")}</span>
+            <input
+              type="checkbox"
+              className="toggle toggle-success"
+              checked={appConfig.showTray}
+              onChange={onChangeTray}
+            />
           </div>
         </div>
       </div>

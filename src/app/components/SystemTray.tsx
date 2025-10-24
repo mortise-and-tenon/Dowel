@@ -4,12 +4,19 @@ import { defaultWindowIcon } from "@tauri-apps/api/app";
 import { Menu } from "@tauri-apps/api/menu";
 import { TrayIcon, TrayIconEvent } from "@tauri-apps/api/tray";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { GlobalContext } from "../utils/providers/GlobalProvider";
 
+export const TrayId = "Dowel";
+
+/**
+ * 系统托盘
+ * @returns
+ */
 export default function TauriSystemTray() {
   const { t, i18n } = useTranslation();
-  const TrayId = "Dowel";
+  const { appConfig } = useContext(GlobalContext);
 
   /**
    * 点击菜单操作
@@ -40,8 +47,13 @@ export default function TauriSystemTray() {
     const appWindow = await getCurrentWindow();
     switch (event.type) {
       case "DoubleClick":
-        await appWindow.show();
-        await appWindow.setFocus();
+        const visible = await appWindow.isVisible();
+        if (visible) {
+          await appWindow.show();
+          await appWindow.setFocus();
+        } else {
+          await appWindow.hide();
+        }
         break;
       default:
         break;
@@ -52,6 +64,10 @@ export default function TauriSystemTray() {
 
   // 初始化系统托盘的函数
   const initAndUpdateTray = async () => {
+    if (!appConfig.showTray) {
+      return;
+    }
+
     try {
       // 1. 创建托盘菜单
       const menu = await Menu.new({

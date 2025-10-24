@@ -18,6 +18,8 @@ export default function HomeLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { appConfig } = useContext(GlobalContext);
+
   /**
    * 窗体实例
    */
@@ -57,7 +59,11 @@ export default function HomeLayout({
    */
   const onClickClose = () => {
     if (appWindow != null) {
-      appWindow.hide();
+      if (appConfig.showTray) {
+        appWindow.hide();
+      } else {
+        appWindow.close();
+      }
     }
   };
 

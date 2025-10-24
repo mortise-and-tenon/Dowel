@@ -2,40 +2,34 @@
 
 /**
  * 全局 Provider 和 Context
- * 使用方法：
- * 1. 获取当前语言和设置语言（主要用于配置管理）
- * const {locale, setLocale} = useContext(I18nContext);
- * locale：当前语言
- * setLocale：设置语言，setLocale("en")
  */
 import { createContext, Dispatch, SetStateAction, useState } from "react";
+import { AppData } from "../utils";
 
 type GlobalContextType = {
-  locale: string;
-  setLocale: Dispatch<SetStateAction<string>>;
+  appConfig: AppData;
+  setAppConfig: Dispatch<SetStateAction<AppData>>;
 };
 
-interface Translations {
-  [key: string]: string;
-}
-
-interface PlaceParam {
-  [key: string]: string;
-}
-
 export const GlobalContext = createContext<GlobalContextType>({
-  locale: "zh",
-  setLocale: () => {},
+  appConfig: {
+    locale: "zh",
+    showTray: true,
+  },
+  setAppConfig: () => {},
 });
 
 export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
-  const [locale, setLocale] = useState("zh");
+  const [appConfig, setAppConfig] = useState<AppData>({
+    locale: "zh",
+    showTray: true,
+  });
 
   return (
     <GlobalContext.Provider
       value={{
-        locale,
-        setLocale,
+        appConfig,
+        setAppConfig,
       }}
     >
       {children}

@@ -329,6 +329,17 @@ export default function Translation() {
     setShowMd(e.target.checked);
   };
 
+  /**
+   * 切换源、目标语言
+   */
+  const onSwitchLang = () => {
+    if (source != "auto") {
+      const preSource = source;
+      setSource(target);
+      setTarget(preSource);
+    }
+  };
+
   return (
     <div className="flex w-full h-full">
       <div className="flex-1 p-4">
@@ -354,7 +365,11 @@ export default function Translation() {
               ))}
             </select>
 
-            <button className="btn btn-ghost">
+            <button
+              className="btn btn-ghost"
+              onClick={onSwitchLang}
+              disabled={source === "auto"}
+            >
               <GoArrowSwitch />
             </button>
             <select
@@ -474,16 +489,6 @@ export default function Translation() {
                   {item.loading ? (
                     <div className="loading loading-dots text-primary"></div>
                   ) : (
-                    <div
-                      className="break-all max-h-40 overflow-y-auto"
-                      ref={(el: HTMLDivElement | null) => {
-                        translateTextRefs.current[index] = el;
-                      }}
-                    >
-                      {item.translatedText}
-                    </div>
-                  )}
-                  {item.ai && (
                     <div
                       className="break-all max-h-40 overflow-y-auto"
                       ref={(el: HTMLDivElement | null) => {
