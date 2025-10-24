@@ -49,7 +49,13 @@
     "config": "配置",
     "url_error_tip": "URL 格式不正确",
     "ai_translate": "AI翻译",
-    "original": "原文"
+    "original": "原文",
+    "web_mode": "翻译模式",
+    "web_mode_tip": "仅文本：翻译网页中的文字；转换为Markdown：翻译同时保留文本格式",
+    "type_text": "仅文本",
+    "type_markdown": "转换为Markdown",
+    "web_selector": "标签选择器",
+    "selector_tip": "CSS选择器，用于选择要翻译的Html内容范围"
   },
   "ai": {
     "provider": "供应商",

@@ -21,7 +21,12 @@ import {
   IoMdUnlock,
 } from "react-icons/io";
 import { LuBrainCircuit, LuKeyRound } from "react-icons/lu";
-import { MdLink, MdModeEdit, MdOutlineSettings } from "react-icons/md";
+import {
+  MdInfoOutline,
+  MdLink,
+  MdModeEdit,
+  MdOutlineSettings,
+} from "react-icons/md";
 import { RiResetLeftFill } from "react-icons/ri";
 import ExternalLink from "../ExternalLink";
 import { GlobalContext } from "@/app/utils/providers/GlobalProvider";
@@ -65,7 +70,7 @@ const DEFAULT_AI_PROMPT = `你是一个专业的翻译引擎，负责将输入�
 请直接输出符合要求的Markdown格式翻译结果。`;
 
 export default function Translation() {
-  const { locale } = useContext(GlobalContext);
+  const { appConfig } = useContext(GlobalContext);
   const { t } = useTranslation();
 
   const adapter = new TauriAdapter();
@@ -285,8 +290,12 @@ export default function Translation() {
     provider: "",
     model: "",
     prompt:
-      locale === "zh" ? DEFAULT_ZH_SYSTEM_PROMPT : DEFAULT_EN_SYSTEM_PROMPT,
+      appConfig.locale === "zh"
+        ? DEFAULT_ZH_SYSTEM_PROMPT
+        : DEFAULT_EN_SYSTEM_PROMPT,
     web_prompt: DEFAULT_AI_PROMPT,
+    web_mode: "text",
+    web_selector: "body",
     on: false,
   });
 
@@ -297,6 +306,7 @@ export default function Translation() {
     const data = await adapter.readAiData("translation");
     if (data) {
       setAi(data);
+      setSelector(data.web_selector);
     }
   };
 
@@ -428,7 +438,7 @@ export default function Translation() {
         return {
           ...pre,
           prompt:
-            locale === "zh"
+            appConfig.locale === "zh"
               ? DEFAULT_ZH_SYSTEM_PROMPT
               : DEFAULT_EN_SYSTEM_PROMPT,
         };
@@ -463,6 +473,39 @@ export default function Translation() {
     try {
       await adapter.writeAiData(ai);
     } catch (error) {}
+  };
+
+  /**
+   * 切换网页翻译模式
+   * @param e
+   */
+  const onChangeMode = (e: any) => {
+    setAi((pre) => {
+      return {
+        ...pre,
+        web_mode: e.target.value,
+      };
+    });
+  };
+
+  /**
+   * 网页选择器值
+   */
+  const [selector, setSelector] = useState("body");
+
+  /**
+   * 输入网页选择器
+   * @param e
+   */
+  const onChangeSelector = (e: any) => {
+    setAi((pre) => {
+      return {
+        ...pre,
+        web_selector: e.target.value,
+      };
+    });
+
+    setSelector(e.target.value);
   };
 
   return (
@@ -745,6 +788,41 @@ export default function Translation() {
               onChange={(e) => onChangePrompt(e, "web")}
               disabled={!isWebEdit}
             ></textarea>
+            <div className="pt-4 space-x-2">
+              <label className="select focus-within:outline-none">
+                <span className="label">
+                  <span>{t("translation.web_mode")}</span>
+                  <div
+                    className="tooltip tooltip-right"
+                    data-tip={t("translation.web_mode_tip")}
+                  >
+                    <MdInfoOutline />
+                  </div>
+                </span>
+                <select value={ai.web_mode} onChange={onChangeMode}>
+                  <option value="text">{t("translation.type_text")}</option>
+                  <option value="markdown">
+                    {t("translation.type_markdown")}
+                  </option>
+                </select>
+              </label>
+              <label className="input focus-within:outline-none">
+                <span className="label">
+                  <span>{t("translation.web_selector")}</span>
+                  <div
+                    className="tooltip"
+                    data-tip={t("translation.selector_tip")}
+                  >
+                    <MdInfoOutline />
+                  </div>
+                </span>
+                <input
+                  className="input focus:outline-none"
+                  value={selector}
+                  onChange={onChangeSelector}
+                />
+              </label>
+            </div>
           </div>
           <div className="flex justify-end mt-4">
             <button

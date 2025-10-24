@@ -49,7 +49,13 @@
     "config": "Configuration",
     "url_error_tip": "URL format is incorrect",
     "ai_translate": "AI Translation",
-    "original": "Original text"
+    "original": "Original text",
+    "web_mode": "Translation Mode",
+    "web_mode_tip": "Text Only:Translates only the text content of web pages;Convert to Markdown:Preserves text formatting and structure.",
+    "type_text": "Only Text",
+    "type_markdown": "Convert To Markdown",
+    "web_selector": "Selector",
+    "selector_tip": "CSS selector to select the range of Html content to translate."
   },
   "ai": {
     "provider": "Provider",

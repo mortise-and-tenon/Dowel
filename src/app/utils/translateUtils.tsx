@@ -1,6 +1,9 @@
 import validator from "validator";
-import { fetchHttp, RequestOptions } from "./utils";
+import { fetchHttp, RequestOptions, TauriAdapter } from "./utils";
 import * as cheerio from "cheerio";
+
+const adapter = new TauriAdapter();
+
 export class TranslateUtils {
   /**
    * 判断是否为 url
@@ -36,11 +39,11 @@ export class TranslateUtils {
     return "";
   };
 
-  parseTag = (content: string, selector: string) => {
+  parseTag = (content: string, mode: string, selector: string) => {
     const $ = cheerio.load(content);
     const targetDiv = $(selector);
 
-    const html = targetDiv.html();
+    const html = mode === "text" ? targetDiv.text() : targetDiv.html();
 
     return html == null
       ? ""
@@ -73,8 +76,15 @@ export class TranslateUtils {
     if (html === "") {
       return "";
     }
-    const selector = "div#content";
 
-    return this.parseTag(html, selector);
+    const data = await adapter.readAiData("translation");
+    let mode = "text";
+    let selector = "body";
+    if (data) {
+      mode = data.web_mode;
+      selector = data.web_selector;
+    }
+
+    return this.parseTag(html, mode, selector);
   };
 }

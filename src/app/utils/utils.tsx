@@ -48,6 +48,8 @@ export type AiData = {
   model: string;
   prompt: string;
   web_prompt: string;
+  web_mode: string;
+  web_selector: string;
   on: boolean;
 };
 
@@ -287,6 +289,10 @@ export class TauriAdapter implements PlatformAdapter {
         model: aiData.model ? aiData.model : oldAi.model,
         prompt: aiData.prompt ? aiData.prompt : oldAi.prompt,
         web_prompt: aiData.web_prompt ? aiData.web_prompt : oldAi.web_prompt,
+        web_mode: aiData.web_mode ? aiData.web_mode : oldAi.web_mode,
+        web_selector: aiData.web_selector
+          ? aiData.web_selector
+          : oldAi.web_selector,
         on: aiData.on != undefined ? aiData.on : false,
       };
     }
