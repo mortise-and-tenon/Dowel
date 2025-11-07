@@ -1,5 +1,9 @@
 import { AiUtils } from "@/app/utils/aiUtils";
-import { registerHotkey, unregisterHotkey } from "@/app/utils/hotKeyUtils";
+import {
+  onHotKeyTranslation,
+  registerHotkey,
+  unregisterHotkey,
+} from "@/app/utils/hotKeyUtils";
 import { showNotification } from "@/app/utils/notifyUtils";
 import { GlobalContext } from "@/app/utils/providers/GlobalProvider";
 import {
@@ -35,7 +39,6 @@ import {
 import { RiListSettingsLine, RiResetLeftFill } from "react-icons/ri";
 import ExternalLink from "../ExternalLink";
 import HotKeyInput from "../HotKeyInput";
-import { onHotKeyTranslation } from "@/app/utils/translateUtils";
 
 /**
  * 默认英文的AI翻译提示词
