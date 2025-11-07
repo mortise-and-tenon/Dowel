@@ -113,7 +113,8 @@ export default function TauriSystemTray() {
         id: TrayId,
       };
 
-      await TrayIcon.new(options);
+      const tray = await TrayIcon.new(options);
+      tray.setTooltip(TrayId);
     } catch (err) {
       console.error("初始化系统托盘失败:", err);
     } finally {

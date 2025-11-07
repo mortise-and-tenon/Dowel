@@ -1,5 +1,7 @@
 import { ReactNode } from "react";
 import { fetchHttp, RequestOptions } from "../utils";
+import { AliTranslation } from "./aliTranslation";
+import { BaiduTranslation } from "./baiduTranslation";
 
 export type TranslationProvider = {
   name: string;
@@ -11,6 +13,20 @@ export type TranslationProvider = {
   key: string;
   secret: string;
   on: boolean;
+};
+
+export type TranslationInstnace = {
+  [key: string]: TranslationInterface;
+  aliyun: AliTranslation;
+  baidu: BaiduTranslation;
+};
+
+/**
+ * 翻译源实体对象映射
+ */
+export const translationInstances: TranslationInstnace = {
+  aliyun: new AliTranslation(),
+  baidu: new BaiduTranslation(),
 };
 
 /**

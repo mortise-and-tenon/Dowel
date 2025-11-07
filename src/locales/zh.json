@@ -44,6 +44,7 @@
       "aliyun": "阿里云机器翻译",
       "baidu": "百度翻译开放平台"
     },
+    "shotcuts": "快捷设置",
     "web_translate": "互联网翻译",
     "enable": "启用平台用于翻译",
     "config": "配置",
@@ -55,7 +56,19 @@
     "type_text": "仅文本",
     "type_markdown": "转换为Markdown",
     "web_selector": "标签选择器",
-    "selector_tip": "CSS选择器，用于选择要翻译的Html内容范围"
+    "selector_tip": "CSS选择器，用于选择要翻译的Html内容范围",
+    "hotkey": "翻译热键",
+    "clear": "清除",
+    "register": "注册",
+    "lang": "翻译语言",
+    "press_btn": "按下按键……",
+    "click_keys": "点击设置",
+    "clipboard": {
+      "start": "开始翻译剪贴板内容",
+      "error": "翻译出错，请重试或检查配置",
+      "end": "翻译结束，请粘贴译文",
+      "conflict": "翻译热键已被占用"
+    }
   },
   "ai": {
     "provider": "供应商",

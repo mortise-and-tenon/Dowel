@@ -1,18 +1,18 @@
-use tauri_plugin_http::reqwest::Client;
-use tauri::command;
+use log::info;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::process::{Command};
-use tokio::process::Command as TokioCommand;
-use log::{info};
-use windows::Win32::System::Threading::CREATE_NO_WINDOW;
+use std::process::Command;
+use tauri::command;
 use tauri::ipc::InvokeError;
+use tauri_plugin_http::reqwest::Client;
+use tokio::process::Command as TokioCommand;
+use windows::Win32::System::Threading::CREATE_NO_WINDOW;
 
 // 定义请求参数结构体
 #[derive(Serialize, Deserialize)]
 struct RequestOptions {
-    method: String, // 必填，HTTP方法，如 "GET", "POST", "PUT" 等
-    url: String,    // 必填，请求的URL
+    method: String,                           // 必填，HTTP方法，如 "GET", "POST", "PUT" 等
+    url: String,                              // 必填，请求的URL
     verify: Option<bool>, //可选，https是否验证，默认校验（校验证书合法性，自签证书可不验证）
     headers: Option<HashMap<String, String>>, // 可选，请求头
     body: Option<String>, // 可选，请求体（如JSON字符串）
@@ -21,8 +21,8 @@ struct RequestOptions {
 // 定义响应结构体
 #[derive(Serialize, Deserialize)]
 struct ApiResponse {
-    status: u16,      // 响应状态码
-    body: String,     // 响应体
+    status: u16,                      // 响应状态码
+    body: String,                     // 响应体
     headers: HashMap<String, String>, // 响应头
 }
 
@@ -81,22 +81,18 @@ async fn make_request(options: RequestOptions) -> Result<ApiResponse, String> {
     let headers = response
         .headers()
         .iter()
-        .map(|(key, value)| {
-            (
-                key.to_string(),
-                value.to_str().unwrap_or("").to_string(),
-            )
-        })
+        .map(|(key, value)| (key.to_string(), value.to_str().unwrap_or("").to_string()))
         .collect();
 
     // 获取响应体
-    let body = response
-        .text()
-        .await
-        .map_err(|e| e.to_string())?; // 处理响应体读取错误
+    let body = response.text().await.map_err(|e| e.to_string())?; // 处理响应体读取错误
 
     // 返回响应数据
-    Ok(ApiResponse { status, body, headers })
+    Ok(ApiResponse {
+        status,
+        body,
+        headers,
+    })
 }
 
 // 执行其他程序命令
@@ -114,26 +110,33 @@ async fn run_exe(exe_path: String, args: Vec<String>) -> Result<String, InvokeEr
         command.creation_flags(CREATE_NO_WINDOW.0);
     }
 
-    let output = command.output()
+    let output = command
+        .output()
         .await
         .map_err(|e| InvokeError::from(format!("Failed to execute process: {}", e)))?;
 
     if output.status.success() {
         let stdout = String::from_utf8_lossy(&output.stdout).to_string();
         let stderr = String::from_utf8_lossy(&output.stderr).to_string();
-        info!("{}",stdout);
-        info!("{}",stderr);
+        info!("{}", stdout);
+        info!("{}", stderr);
         Ok(stdout)
     } else {
         let stderr = String::from_utf8_lossy(&output.stderr).to_string();
-        Err(InvokeError::from(format!("Command failed with error: {}", stderr)))
+        Err(InvokeError::from(format!(
+            "Command failed with error: {}",
+            stderr
+        )))
     }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![make_request,run_exe]) // 注册命令
+        .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(tauri_plugin_notification::init())
+        .invoke_handler(tauri::generate_handler![make_request, run_exe]) // 注册命令
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_fs::init())

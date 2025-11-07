@@ -42,6 +42,11 @@ export type TranslationData = {
   on: boolean;
 };
 
+export type TranslationConfig = {
+  hotKey: string;
+  locale: string;
+};
+
 export type AiData = {
   name: string;
   provider: string;
@@ -57,6 +62,7 @@ export type ConfigFile = {
   app: AppData;
   providers: ProviderData[];
   translations: TranslationData[];
+  translationConfig: TranslationConfig;
   ai: AiData[];
 };
 
@@ -70,6 +76,10 @@ export interface PlatformAdapter {
   writeTranslation(translationData: TranslationData): Promise<boolean>;
   readTranslations(): Promise<TranslationData[]>;
   readTranslation(name: string): Promise<TranslationData | undefined>;
+  writeTranslationConfig(
+    translationConfig: TranslationConfig
+  ): Promise<boolean>;
+  readTranslationConfig(): Promise<TranslationConfig>;
   writeAiData(aiData: AiData): Promise<boolean>;
   readAiData(name: string): Promise<AiData | undefined>;
 }
@@ -91,6 +101,10 @@ export class TauriAdapter implements PlatformAdapter {
         },
         providers: [],
         translations: [],
+        translationConfig: {
+          hotKey: "",
+          locale: "zh",
+        },
         ai: [],
       };
     }
@@ -266,6 +280,26 @@ export class TauriAdapter implements PlatformAdapter {
       return datas.find((item) => item.name === name);
     }
     return undefined;
+  };
+
+  writeTranslationConfig = async (
+    translationConfig: TranslationConfig
+  ): Promise<boolean> => {
+    const configFile = await this.readConfigFile();
+    configFile.translationConfig = translationConfig;
+    return await this.writeConfigFile(configFile);
+  };
+
+  readTranslationConfig = async (): Promise<TranslationConfig> => {
+    const configFile = await this.readConfigFile();
+    if (!configFile.translationConfig) {
+      return {
+        locale: "zh",
+        hotKey: "",
+      };
+    }
+
+    return configFile.translationConfig;
   };
 
   /**

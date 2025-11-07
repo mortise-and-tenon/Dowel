@@ -1,6 +1,6 @@
+import * as cheerio from "cheerio";
 import validator from "validator";
 import { fetchHttp, RequestOptions, TauriAdapter } from "./utils";
-import * as cheerio from "cheerio";
 
 const adapter = new TauriAdapter();
 

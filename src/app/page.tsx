@@ -5,6 +5,9 @@ import { useTranslation } from "react-i18next";
 import { themeChange } from "theme-change";
 import { GlobalContext } from "./utils/providers/GlobalProvider";
 import { TauriAdapter } from "./utils/utils";
+import { onHotKeyTranslation, registerHotkey } from "./utils/hotKeyUtils";
+import { showNotification } from "./utils/notifyUtils";
+import i18n from "./lib/i18n";
 
 export default function Home() {
   const { setAppConfig } = useContext(GlobalContext);
@@ -16,6 +19,7 @@ export default function Home() {
   useEffect(() => {
     themeChange(false);
     readAppConfig();
+    autoRegisterHotkey();
 
     const timer = setTimeout(() => {
       router.push("/home");
@@ -28,6 +32,17 @@ export default function Home() {
     const config = await adapter.readAppData();
     if (config) {
       setAppConfig(config);
+    }
+  };
+
+  const autoRegisterHotkey = async () => {
+    const translationConfig = await adapter.readTranslationConfig();
+    const result = await registerHotkey(translationConfig.hotKey, () => {
+      onHotKeyTranslation();
+    });
+
+    if (!result) {
+      showNotification(i18n.t("translation.clipboard.conflict"));
     }
   };
 

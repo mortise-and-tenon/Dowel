@@ -44,6 +44,7 @@
       "aliyun": "Aliyun Machine Translation",
       "baidu": "Baidu Translation"
     },
+    "shotcuts": "Shotcuts",
     "web_translate": "Web Translation",
     "enable": "Enable the platform for translation",
     "config": "Configuration",
@@ -55,7 +56,19 @@
     "type_text": "Only Text",
     "type_markdown": "Convert To Markdown",
     "web_selector": "Selector",
-    "selector_tip": "CSS selector to select the range of Html content to translate."
+    "selector_tip": "CSS selector to select the range of Html content to translate.",
+    "hotkey": "Hotkey for Translation",
+    "clear": "Clear",
+    "register": "Register",
+    "lang": "Language",
+    "press_btn": "Press keys...",
+    "click_keys": "Click to Settings",
+    "clipboard": {
+      "start": "Start translating",
+      "error": "Error.Try again or check configuration",
+      "end": "Done, please paste the translation",
+      "conflict": "Translation hotkey in use"
+    }
   },
   "ai": {
     "provider": "Provider",

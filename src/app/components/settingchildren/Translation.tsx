@@ -1,5 +1,9 @@
 import { AiUtils } from "@/app/utils/aiUtils";
+import { registerHotkey, unregisterHotkey } from "@/app/utils/hotKeyUtils";
+import { showNotification } from "@/app/utils/notifyUtils";
+import { GlobalContext } from "@/app/utils/providers/GlobalProvider";
 import {
+  CommonLangCode,
   DefaultTranslations,
   TranslationProvider,
 } from "@/app/utils/translations/translationInferace";
@@ -7,10 +11,11 @@ import {
   AiData,
   ProviderData,
   TauriAdapter,
+  TranslationConfig,
   TranslationData,
 } from "@/app/utils/utils";
 import { useContext, useEffect, useRef, useState } from "react";
-import { I18nContext, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { AiOutlineGlobal, AiOutlineIdcard } from "react-icons/ai";
 import { FaTimesCircle } from "react-icons/fa";
 import {
@@ -27,9 +32,10 @@ import {
   MdModeEdit,
   MdOutlineSettings,
 } from "react-icons/md";
-import { RiResetLeftFill } from "react-icons/ri";
+import { RiListSettingsLine, RiResetLeftFill } from "react-icons/ri";
 import ExternalLink from "../ExternalLink";
-import { GlobalContext } from "@/app/utils/providers/GlobalProvider";
+import HotKeyInput from "../HotKeyInput";
+import { onHotKeyTranslation } from "@/app/utils/translateUtils";
 
 /**
  * 默认英文的AI翻译提示词
@@ -70,7 +76,7 @@ const DEFAULT_AI_PROMPT = `你是一个专业的翻译引擎，负责将输入�
 请直接输出符合要求的Markdown格式翻译结果。`;
 
 export default function Translation() {
-  const { appConfig } = useContext(GlobalContext);
+  const { appConfig, setAppConfig } = useContext(GlobalContext);
   const { t } = useTranslation();
 
   const adapter = new TauriAdapter();
@@ -110,10 +116,18 @@ export default function Translation() {
     TranslationProvider[]
   >([]);
 
+  /**
+   * 翻译基础配置
+   */
+  const [translationConfig, setTranslationConfig] = useState<TranslationConfig>(
+    { locale: appConfig.locale, hotKey: "" }
+  );
+
   useEffect(() => {
     readTranslations();
     readProviders();
     readAi();
+    readTranslationConfig();
   }, []);
 
   const readTranslations = async () => {
@@ -134,6 +148,11 @@ export default function Translation() {
       });
       setTranslationConfigData(resultData);
     }
+  };
+
+  const readTranslationConfig = async () => {
+    const config = await adapter.readTranslationConfig();
+    setTranslationConfig(config);
   };
 
   const [newApi, setNewApi] = useState("");
@@ -508,6 +527,66 @@ export default function Translation() {
     setSelector(e.target.value);
   };
 
+  const onSaveHotKey = async () => {
+    const result = await registerHotkey(translationConfig.hotKey, () => {
+      onHotKeyTranslation();
+    });
+
+    if (result) {
+      await adapter.writeTranslationConfig(translationConfig);
+      showNotification("注册热键成功");
+    } else {
+      showNotification("热键已被占用");
+    }
+  };
+
+  /**
+   * 输入快捷键
+   * @param value
+   */
+  const onChangeShortcut = (value: string) => {
+    setTranslationConfig((pre) => {
+      return {
+        ...pre,
+        hotKey: value,
+      };
+    });
+  };
+
+  /**
+   * 清除快捷键并注销
+   */
+  const onCleanHotKey = async () => {
+    unregisterHotkey(translationConfig.hotKey);
+    setTranslationConfig((pre) => {
+      return {
+        ...pre,
+        hotKey: "",
+      };
+    });
+    await adapter.writeTranslationConfig({
+      ...translationConfig,
+      hotKey: "",
+    });
+  };
+
+  /**
+   * 切换翻译语言
+   * @param e
+   */
+  const onSelectTarget = (e: any) => {
+    setTranslationConfig((pre) => {
+      return {
+        ...pre,
+        locale: e.target.value,
+      };
+    });
+  };
+
+  const onSaveTarget = async () => {
+    await adapter.writeTranslationConfig(translationConfig);
+  };
+
   return (
     <div className="p-2 h-full">
       <div className="tabs tabs-lift h-full">
@@ -832,6 +911,56 @@ export default function Translation() {
             >
               {t("common.confirm")}
             </button>
+          </div>
+        </div>
+
+        <label className="tab">
+          <input type="radio" name="translate_tabs" />
+          <div className="flex items-center space-x-2">
+            <RiListSettingsLine className="text-primary text-lg" />
+            <span className="font-semibold">{t("translation.shotcuts")}</span>
+          </div>
+        </label>
+        <div className="tab-content bg-base-100 border-base-300 p-4 overflow-y-auto hide-scrollbar">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-1">
+              <label className="flex">
+                <span className="label mr-2">{t("translation.hotkey")}</span>
+                <HotKeyInput
+                  value={translationConfig.hotKey}
+                  onChange={onChangeShortcut}
+                />
+              </label>
+            </div>
+            <div className="col-span-1 space-x-2">
+              <button className="btn btn-error" onClick={onCleanHotKey}>
+                {t("translation.clear")}
+              </button>
+              <button className="btn" onClick={onSaveHotKey}>
+                {t("translation.register")}
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4 pt-4">
+            <div className="flex col-span-1">
+              <span className="label mr-2">{t("translation.lang")}</span>
+              <select
+                className="select focus:outline-none"
+                value={translationConfig?.locale}
+                onChange={onSelectTarget}
+              >
+                {CommonLangCode.map((item) => (
+                  <option key={`target-${item}`} value={item}>
+                    {t(`langs.${item}`)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="col-span-1">
+              <button className="btn" onClick={onSaveTarget}>
+                {t("common.save")}
+              </button>
+            </div>
           </div>
         </div>
       </div>

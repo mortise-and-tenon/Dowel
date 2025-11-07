@@ -2,12 +2,10 @@
 import { AiUtils } from "@/app/utils/aiUtils";
 import { GlobalContext } from "@/app/utils/providers/GlobalProvider";
 import { TranslateUtils } from "@/app/utils/translateUtils";
-import { AliTranslation } from "@/app/utils/translations/aliTranslation";
-import { BaiduTranslation } from "@/app/utils/translations/baiduTranslation";
 import {
   CommonLangCode,
   DefaultTranslations,
-  TranslationInterface,
+  translationInstances,
   User_Msg_Format,
 } from "@/app/utils/translations/translationInferace";
 import { AiData, TauriAdapter, TranslationData } from "@/app/utils/utils";
@@ -29,9 +27,12 @@ type TranslationDisplay = {
   translatedText: string;
 };
 
+/**
+ * 翻译页面
+ * @returns
+ */
 export default function Translation() {
-  const { locale } = useContext(GlobalContext);
-
+  const { appConfig } = useContext(GlobalContext);
   const { t } = useTranslation();
 
   const adapter = new TauriAdapter();
@@ -54,20 +55,6 @@ export default function Translation() {
    * 翻译按钮可用/禁用
    */
   const [enableBtn, setEnableBtn] = useState(false);
-
-  type TranslationInstnace = {
-    [key: string]: TranslationInterface;
-    aliyun: AliTranslation;
-    baidu: BaiduTranslation;
-  };
-
-  /**
-   * 翻译源实体对象映射
-   */
-  const translationInstances: TranslationInstnace = {
-    aliyun: new AliTranslation(),
-    baidu: new BaiduTranslation(),
-  };
 
   /**
    * 已启用的翻译源
@@ -215,6 +202,7 @@ export default function Translation() {
    */
   const onAiTranslate = async () => {
     try {
+      setAiTranslatedText("");
       setAiLoading(true);
       // 调用流式工具函数（严格匹配参数类型）
       await aiUtils.singleStreamCompletions({
@@ -293,7 +281,7 @@ export default function Translation() {
   /**
    * 翻译语言
    */
-  const [target, setTarget] = useState(locale);
+  const [target, setTarget] = useState(appConfig.locale);
 
   /**
    * 切换原文语言

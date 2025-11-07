@@ -15,6 +15,13 @@
     "core:default",
     "core:app:allow-default-window-icon",
     "fs:default",
+    "notification:default",
+    "notification:allow-request-permission",
+    "global-shortcut:allow-is-registered",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-unregister",
+    "clipboard-manager:allow-read-text",
+    "clipboard-manager:allow-write-text",
     {
       "identifier": "fs:allow-app-read-recursive",
       "allow": [
