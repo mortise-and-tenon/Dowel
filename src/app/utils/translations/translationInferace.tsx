@@ -12,6 +12,7 @@ export type TranslationProvider = {
   api: string;
   key: string;
   secret: string;
+  limit: number;
   on: boolean;
 };
 
@@ -53,6 +54,7 @@ export const DefaultTranslations: TranslationProvider[] = [
     api: "",
     key: "",
     secret: "",
+    limit: 1000000,
     on: false,
   },
   {
@@ -69,6 +71,7 @@ export const DefaultTranslations: TranslationProvider[] = [
     api: "",
     key: "",
     secret: "",
+    limit: 1000000,
     on: false,
   },
 ];

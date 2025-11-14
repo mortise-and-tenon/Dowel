@@ -34,6 +34,7 @@ import {
   MdInfoOutline,
   MdLink,
   MdModeEdit,
+  MdOutlineGeneratingTokens,
   MdOutlineSettings,
 } from "react-icons/md";
 import { RiListSettingsLine, RiResetLeftFill } from "react-icons/ri";
@@ -144,6 +145,7 @@ export default function Translation() {
             api: b.api ? b.api : "",
             key: b.key ? b.key : "",
             secret: b.secret ? b.secret : "",
+            limit: b.limit ? b.limit : a.limit,
             on: b.on,
           };
         }
@@ -163,6 +165,8 @@ export default function Translation() {
   const [newKey, setNewKey] = useState("");
 
   const [newSecret, setNewSecret] = useState("");
+
+  const [newCharLimit, setNewCharLimit] = useState(1000000);
 
   useEffect(() => {
     const enabled =
@@ -190,6 +194,7 @@ export default function Translation() {
     setNewApi(translation.api);
     setNewKey(translation.key);
     setNewSecret(translation.secret);
+    setNewCharLimit(translation.limit);
     setShowModal(true);
   };
 
@@ -212,6 +217,7 @@ export default function Translation() {
             api: newApi,
             key: newKey,
             secret: newSecret,
+            limit: newCharLimit,
             on: selectedTranslation.on,
           });
         } else {
@@ -219,6 +225,7 @@ export default function Translation() {
             name: selectedTranslation.name,
             key: newKey,
             secret: newSecret,
+            limit: newCharLimit,
             on: selectedTranslation.on,
           });
         }
@@ -226,6 +233,7 @@ export default function Translation() {
         setNewApi("");
         setNewKey("");
         setNewSecret("");
+        setNewCharLimit(0);
         await readTranslations();
       } catch (error) {}
     } else {
@@ -246,6 +254,10 @@ export default function Translation() {
 
   const onChangeSecret = (e: any) => {
     setNewSecret(e.target.value);
+  };
+
+  const onChangeLimit = (e: any) => {
+    setNewCharLimit(e.target.value);
   };
 
   /**
@@ -661,12 +673,12 @@ export default function Translation() {
                 {selectedTranslation?.need_api && (
                   <>
                     <label className="input validator w-full focus-within:outline-none">
-                      <MdLink />
+                      <MdLink className="text-primary" />
                       <input
                         type="url"
                         ref={apiInputRef}
                         required
-                        placeholder="服务接入点"
+                        placeholder={t("translation.endpoint")}
                         pattern="^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9\-].*[a-zA-Z0-9])?\.)+[a-zA-Z].*$"
                         value={newApi}
                         onChange={onChangeApi}
@@ -678,32 +690,50 @@ export default function Translation() {
                   </>
                 )}
 
-                <label className="input w-full mb-4">
-                  <AiOutlineIdcard />
+                <label className="input w-full mb-4 focus-within:outline-none">
+                  <AiOutlineIdcard className="text-primary" />
                   <input
                     type="text"
                     required
-                    placeholder="Access Key Id"
+                    placeholder={t("translation.key_id")}
                     value={newKey}
                     onChange={onChangeKey}
                   />
                 </label>
-                <div className="join w-full">
+                <div className="join w-full mb-4">
                   <div className="w-full">
                     <label className="input join-item w-full focus-within:outline-none">
-                      <LuKeyRound />
+                      <LuKeyRound className="text-primary" />
                       <input
                         type={hideKey ? "password" : "text"}
                         required
                         value={newSecret}
                         onChange={onChangeSecret}
-                        placeholder="Access Key Secret"
+                        placeholder={t("translation.key_secret")}
                       />
                     </label>
                   </div>
                   <button className="btn join-item" onClick={onShowOrHideKey}>
-                    {hideKey ? <IoMdEyeOff /> : <IoMdEye />}
+                    {hideKey ? (
+                      <IoMdEyeOff />
+                    ) : (
+                      <IoMdEye className="text-primary" />
+                    )}
                   </button>
+                </div>
+                <div className="join w-full mb-4">
+                  <label className="input w-full focus-within:outline-none">
+                    <MdOutlineGeneratingTokens />
+                    <input
+                      type="number"
+                      placeholder={t("translation.token_limit")}
+                      value={newCharLimit}
+                      onChange={onChangeLimit}
+                    />
+                  </label>
+                  <span className="label">
+                    {t("translation.token_limit_label")}
+                  </span>
                 </div>
                 {displayMsg && (
                   <div role="alert" className="alert alert-error">

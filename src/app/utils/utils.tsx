@@ -39,6 +39,8 @@ export type TranslationData = {
   api?: string;
   key?: string;
   secret?: string;
+  limit?: number;
+  used?: number;
   on: boolean;
 };
 
@@ -244,6 +246,10 @@ export class TauriAdapter implements PlatformAdapter {
           translationData.secret != undefined
             ? translationData.secret
             : oldTranslation.secret,
+        limit: translationData.limit
+          ? translationData.limit
+          : oldTranslation.limit,
+        used: translationData.used ? translationData.used : oldTranslation.used,
         on: translationData.on != undefined ? translationData.on : false,
       };
     } else {

@@ -11,6 +11,7 @@
 - [validator](https://github.com/validatorjs/validator.js)
 - [react-markdown](https://github.com/remarkjs/react-markdown)
 - rehype-highlight highlight.js
+- @formatjs/intl-numberformat
 
 # 运行、编译环境
 
