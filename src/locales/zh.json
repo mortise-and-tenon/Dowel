@@ -52,6 +52,7 @@
     "key_id": "Access Key Id",
     "key_secret": "Access Key Secret",
     "token_used": "Token 用量",
+    "token_label": "字符",
     "token_limit": "Token上限",
     "token_limit_label": "字符/月",
     "url_error_tip": "URL 格式不正确",

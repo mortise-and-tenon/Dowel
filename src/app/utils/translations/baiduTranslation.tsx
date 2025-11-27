@@ -10,11 +10,12 @@ import {
   TranslationResult,
 } from "./translationInferace";
 
+const providerName = "baidu";
 const platformAdapter = new TauriAdapter();
 
 export class BaiduTranslation implements TranslationInterface {
   translate = async (text: string, from: string, to: string) => {
-    const config = await platformAdapter.readTranslation("baidu");
+    const config = await platformAdapter.readTranslation(providerName);
 
     if (config != undefined) {
       const api = config.api
@@ -22,7 +23,9 @@ export class BaiduTranslation implements TranslationInterface {
         : "https://fanyi-api.baidu.com/api/trans/vip/translate";
       const key = config.key ? config.key : "";
       const secret = config.secret ? config.secret : "";
-      return this.translateWithKey(text, from, to, api, key, secret);
+      const result = this.translateWithKey(text, from, to, api, key, secret);
+      await platformAdapter.refreshTokenUsed(providerName, text.length);
+      return result;
     }
 
     throw new Error("translation.config.error");

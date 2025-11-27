@@ -4,17 +4,20 @@
 import { TauriAdapter } from "../utils";
 import { TranslationInterface } from "./translationInferace";
 
+const providerName = "aliyun";
 const platformAdapter = new TauriAdapter();
 
 export class AliTranslation implements TranslationInterface {
   translate = async (text: string, from: string, to: string) => {
-    const config = await platformAdapter.readTranslation("aliyun");
+    const config = await platformAdapter.readTranslation(providerName);
 
     if (config != undefined) {
       const api = config.api ? config.api : "https://mt.aliyuncs.com";
       const key = config.key ? config.key : "";
       const secret = config.secret ? config.secret : "";
-      return this.translateWithKey(text, from, to, api, key, secret);
+      const result = this.translateWithKey(text, from, to, api, key, secret);
+      await platformAdapter.refreshTokenUsed(providerName, text.length);
+      return result;
     }
 
     throw new Error("translation.config.error");

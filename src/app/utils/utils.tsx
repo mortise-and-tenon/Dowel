@@ -41,6 +41,7 @@ export type TranslationData = {
   secret?: string;
   limit?: number;
   used?: number;
+  last_reset_month?: string;
   on: boolean;
 };
 
@@ -76,6 +77,8 @@ export interface PlatformAdapter {
   readProviders(): Promise<ProviderData[]>;
   readProvider(name: string): Promise<ProviderData | undefined>;
   writeTranslation(translationData: TranslationData): Promise<boolean>;
+  resetTokenUsedMonth(): Promise<boolean>;
+  refreshTokenUsed(name: string, used: number): Promise<boolean>;
   readTranslations(): Promise<TranslationData[]>;
   readTranslation(name: string): Promise<TranslationData | undefined>;
   writeTranslationConfig(
@@ -250,6 +253,9 @@ export class TauriAdapter implements PlatformAdapter {
           ? translationData.limit
           : oldTranslation.limit,
         used: translationData.used ? translationData.used : oldTranslation.used,
+        last_reset_month: translationData.last_reset_month
+          ? translationData.last_reset_month
+          : oldTranslation.last_reset_month,
         on: translationData.on != undefined ? translationData.on : false,
       };
     } else {
@@ -264,6 +270,52 @@ export class TauriAdapter implements PlatformAdapter {
     }
 
     return await this.writeConfigFile(configFile);
+  };
+
+  resetTokenUsedMonth = async (): Promise<boolean> => {
+    const configFile = await this.readConfigFile();
+
+    configFile.translations = configFile.translations.map((item) => {
+      const newMonth = this.getCurrentMonthKey();
+      const reset = !item.last_reset_month || item.last_reset_month != newMonth;
+
+      return {
+        ...item,
+        used: reset ? 0 : item.used,
+        last_reset_month: reset ? newMonth : item.last_reset_month,
+      };
+    });
+
+    return await this.writeConfigFile(configFile);
+  };
+
+  refreshTokenUsed = async (name: string, used: number): Promise<boolean> => {
+    const configFile = await this.readConfigFile();
+
+    // 查找是否存在同名配置
+    const existingIndex = configFile.hasOwnProperty("translations")
+      ? configFile.translations.findIndex((item) => item.name === name)
+      : -2;
+    const newMonth = this.getCurrentMonthKey();
+    if (existingIndex > -1) {
+      // 存在同名，替换原有数据
+      const oldTranslation = configFile.translations[existingIndex];
+      configFile.translations[existingIndex] = {
+        ...oldTranslation,
+        used: (oldTranslation.used ? oldTranslation.used : 0) + used,
+      };
+
+      return await this.writeConfigFile(configFile);
+    } else {
+      return false;
+    }
+  };
+
+  getCurrentMonthKey = (): string => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0"); // 月份 0-11 → 补0为两位数
+    return `${year}${month}`;
   };
 
   /**

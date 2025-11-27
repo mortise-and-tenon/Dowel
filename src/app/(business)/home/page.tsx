@@ -46,7 +46,10 @@ export default function Main() {
   };
 
   const readTranslations = async () => {
-    const data = await adapter.readTranslations();
+    await adapter.resetTokenUsedMonth();
+    let data = await adapter.readTranslations();
+
+    data = await adapter.readTranslations();
 
     let resultData: TranslationToken[] = [];
     if (data.length > 0) {
@@ -92,6 +95,7 @@ export default function Main() {
               <div className="stat-value text-secondary">
                 {formatCompactNumber(item.used, appConfig.locale)}
               </div>
+              <div className="stat-desc">{t("translation.token_label")}</div>
             </div>
 
             <div className="stat place-items-center">

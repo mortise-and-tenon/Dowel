@@ -33,14 +33,14 @@ export default function RootLayout({
 
     readAppData();
 
-    // const handleContextMenu = (e: Event) => {
-    //   e.preventDefault();
-    // };
+    const handleContextMenu = (e: Event) => {
+      e.preventDefault();
+    };
 
-    // document.addEventListener("contextmenu", handleContextMenu);
-    // return () => {
-    //   document.removeEventListener("contextmenu", handleContextMenu);
-    // };
+    document.addEventListener("contextmenu", handleContextMenu);
+    return () => {
+      document.removeEventListener("contextmenu", handleContextMenu);
+    };
   }, []);
 
   const readAppData = async () => {

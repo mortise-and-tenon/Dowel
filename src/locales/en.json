@@ -52,6 +52,7 @@
     "key_id": "Access Key Id",
     "key_secret": "Access Key Secret",
     "token_used": "Token Used",
+    "token_label": "characters",
     "token_limit": "Token Limits",
     "token_limit_label": "characters/month",
     "url_error_tip": "URL format is incorrect",

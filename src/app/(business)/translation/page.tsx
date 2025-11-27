@@ -25,6 +25,7 @@ type TranslationDisplay = {
   logo: ReactNode;
   loading: boolean;
   translatedText: string;
+  display: boolean;
 };
 
 /**
@@ -92,7 +93,7 @@ export default function Translation() {
     if (data.length > 0) {
       resultData = data
         .filter((item) => item.on)
-        .map((a: TranslationData) => {
+        .map((a: TranslationData, index) => {
           const b = DefaultTranslations.find(
             (item: TranslationData) => item.name === a.name
           );
@@ -104,6 +105,7 @@ export default function Translation() {
               logo: b.logo,
               loading: false,
               translatedText: "",
+              display: index == 0,
             };
           }
           return null;
@@ -122,6 +124,7 @@ export default function Translation() {
           logo: <MdAutoAwesome className="text-primary" />,
           loading: false,
           translatedText: "",
+          display: true,
         },
         ...resultData,
       ];
@@ -167,7 +170,10 @@ export default function Translation() {
           } else {
             return translationInstances[item.name]
               .translate(originalText, source, target)
-              .then((result) => result.translated);
+              .then((result) => {
+                updateUsed(item.name, result.original.length);
+                return result.translated;
+              });
           }
         })
       );
@@ -178,12 +184,25 @@ export default function Translation() {
             ...data,
             translatedText: taskResults[index],
             loading: false,
+            display: true,
           };
         });
         return newData;
       });
     } catch (error: any) {
       console.error("翻译失败:", error.message);
+    }
+  };
+
+  //更新字符用量
+  const updateUsed = async (providerName: string, newNum: number) => {
+    const provider = await adapter.readTranslation(providerName);
+    if (provider) {
+      const used = provider?.used ? provider.used : 0 + newNum;
+      await adapter.writeTranslation({
+        ...provider,
+        used: used,
+      });
     }
   };
 
@@ -328,6 +347,21 @@ export default function Translation() {
     }
   };
 
+  /**
+   * 点击展示/隐藏各供应商翻译折叠区域
+   * @param index
+   */
+  const onDisplay = (index: number) => {
+    setTranslationData((pre) => {
+      return pre.map((item, i) => {
+        return {
+          ...item,
+          display: i == index ? !item.display : item.display,
+        };
+      });
+    });
+  };
+
   return (
     <div className="flex w-full h-full">
       <div className="flex-1 p-4">
@@ -460,16 +494,24 @@ export default function Translation() {
         {!isUrl &&
           translationData.map((item, index) => (
             <div
-              className={`collapse collapse-arrow ${
-                index == 0 && "collapse-open"
-              } w-full bg-base-300 border-base-300 border`}
+              className={`collapse collapse-arrow w-full bg-base-300 border-base-300 border`}
               key={item.name}
             >
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={item.display}
+                onChange={(e) => onDisplay(index)}
+              />
               <div className="collapse-title bg-base-200">
                 <div className="flex items-center">
                   <div className="w-20 flex justify-center">{item.logo}</div>
-                  <span className="pl-2 font-semibold">{t(item.i18nName)}</span>
+                  <span
+                    className={`pl-2 text-base-content font-bold ${
+                      item.loading && "animate-bounce"
+                    }`}
+                  >
+                    {t(item.i18nName)}
+                  </span>
                 </div>
               </div>
               <div className="w-full collapse-content bg-base-100">
@@ -478,7 +520,7 @@ export default function Translation() {
                     <div className="loading loading-dots text-primary"></div>
                   ) : (
                     <div
-                      className="break-all max-h-40 overflow-y-auto"
+                      className="break-all max-h-40 overflow-y-auto "
                       ref={(el: HTMLDivElement | null) => {
                         translateTextRefs.current[index] = el;
                       }}
