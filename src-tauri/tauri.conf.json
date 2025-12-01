@@ -1,6 +1,7 @@
 {
   "productName": "Dowel",
-  "version": "0.1.0",
+  "mainBinaryName": "Dowel",
+  "version": "1.0.0",
   "identifier": "fun.mortnon.dowel",
   "build": {
     "frontendDist": "../out",

@@ -24,11 +24,11 @@ const menuDatas: SettingMenuData[] = [
     icon: <MdOutlineTranslate className="text-xl" />,
     i18nName: "setting.translation",
   },
-  {
-    name: "voice",
-    icon: <MdSettingsVoice className="text-xl" />,
-    i18nName: "setting.voice",
-  },
+  // {
+  //   name: "voice",
+  //   icon: <MdSettingsVoice className="text-xl" />,
+  //   i18nName: "setting.voice",
+  // },
   {
     name: "ai",
     icon: <MdOutlineSettings className="text-xl" />,
