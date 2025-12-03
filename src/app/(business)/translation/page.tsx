@@ -9,6 +9,7 @@ import {
   User_Msg_Format,
 } from "@/app/utils/translations/translationInferace";
 import { AiData, TauriAdapter, TranslationData } from "@/app/utils/utils";
+import { useRouter } from "next/navigation";
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -36,6 +37,8 @@ export default function Translation() {
   const { appConfig } = useContext(GlobalContext);
   const { t } = useTranslation();
 
+  const router = useRouter();
+
   const adapter = new TauriAdapter();
 
   const aiUtils = new AiUtils();
@@ -56,6 +59,11 @@ export default function Translation() {
    * 翻译按钮可用/禁用
    */
   const [enableBtn, setEnableBtn] = useState(false);
+
+  /**
+   * 数据加载状态
+   */
+  const [loading, setLoading] = useState(false);
 
   /**
    * 已启用的翻译源
@@ -87,6 +95,7 @@ export default function Translation() {
    * 获取已启用的翻译源
    */
   const readTranslations = async () => {
+    setLoading(true);
     const data: TranslationData[] = await adapter.readTranslations();
 
     let resultData: TranslationDisplay[] = [];
@@ -131,6 +140,7 @@ export default function Translation() {
     }
 
     setTranslationData(resultData);
+    setLoading(false);
   };
 
   /**
@@ -362,190 +372,225 @@ export default function Translation() {
     });
   };
 
+  const onNagviteSetting = () => {
+    router.push("/setting?menu=translation");
+  };
+
   return (
     <div className="flex w-full h-full">
-      <div className="flex-1 p-4">
-        <textarea
-          className="textarea h-60 max-h-60 w-full focus:outline-none"
-          ref={sourceTextRef}
-          placeholder={t("translation.original")}
-          value={originalText}
-          onChange={onChangeOriginal}
-        ></textarea>
-        <div className="mt-2 flex justify-between w-full p-2 bg-base-100 rounded-lg">
-          <div className="flex w-full space-x-2">
-            <select
-              className="select focus:outline-none"
-              value={source}
-              onChange={onSelectSource}
-            >
-              <option value="auto">{t("langs.auto")}</option>
-              {CommonLangCode.map((item) => (
-                <option key={`source-${item}`} value={item}>
-                  {t(`langs.${item}`)}
-                </option>
-              ))}
-            </select>
-
-            <button
-              className="btn btn-ghost"
-              onClick={onSwitchLang}
-              disabled={source === "auto"}
-            >
-              <GoArrowSwitch />
-            </button>
-            <select
-              className="select focus:outline-none"
-              value={target}
-              onChange={onSelectTarget}
-            >
-              {CommonLangCode.map((item) => (
-                <option key={`target-${item}`} value={item}>
-                  {t(`langs.${item}`)}
-                </option>
-              ))}
-            </select>
+      {loading ? (
+        <div className="flex-1 p-4">
+          <div className="flex space-x-2">
+            <div className="flex-1 space-y-2">
+              <div className="skeleton h-64 bg-base-200"></div>
+              <div className="skeleton h-12  bg-base-200"></div>
+            </div>
+            <div className="flex-1 space-y-2">
+              <div className="skeleton h-16 bg-base-200"></div>
+              <div className="skeleton h-16 bg-base-200"></div>
+              <div className="skeleton h-16 bg-base-200"></div>
+            </div>
           </div>
-          {!isUrl ? (
-            <button
-              className="btn btn-outline btn-primary ml-2"
-              onClick={onTranslate}
-              disabled={!enableBtn}
-            >
-              <MdOutlineTranslate className="text-2xl" />
-            </button>
-          ) : (
-            <button
-              className="btn btn-outline btn-primary ml-2"
-              onClick={onAiTranslate}
-              disabled={!enableBtn || aiLoading}
-            >
-              <MdOutlineTranslate className="text-lg" />
-              AI
-            </button>
-          )}
         </div>
-      </div>
-      <div className="flex-1 max-w-[50%] p-4 space-y-2 overflow-y-auto hide-scrollbar">
-        {isUrl && (
-          <div
-            className={`collapse collapse-arrow collapse-open bg-base-300 border-base-300 border`}
-          >
-            <div className="collapse-title bg-base-200">
-              <div className="flex items-center">
-                <div className="w-20 flex justify-center">
-                  {translationData[0].logo}
-                </div>
-                <span className="pl-2 font-semibold">
-                  {t(translationData[0].i18nName)}
-                </span>
-              </div>
-            </div>
-            <div className="collapse-content bg-base-100 min-w-0">
-              <div className="pt-2 w-full">
-                {showMd ? (
-                  <div className="break-all max-h-40 w-full overflow-y-auto">
-                    <div className="pointer-events-none">
-                      <ReactMarkdown
-                        // 启用代码高亮
-                        rehypePlugins={[rehypeHighlight]}
-                        // 处理空内容
-                        children={aiTranslatedText || ""}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    className="break-all max-h-40 overflow-y-auto"
-                    ref={(el: HTMLDivElement | null) => {
-                      translateTextRefs.current[0] = el;
-                    }}
-                  >
-                    {aiTranslatedText}
-                  </div>
-                )}
+      ) : translationData.length > 0 ? (
+        <>
+          <div className="flex-1 p-4">
+            <textarea
+              className="textarea h-60 max-h-60 w-full focus:outline-none"
+              ref={sourceTextRef}
+              placeholder={t("translation.original")}
+              value={originalText}
+              onChange={onChangeOriginal}
+            ></textarea>
+            <div className="mt-2 flex justify-between w-full p-2 bg-base-100 rounded-lg">
+              <div className="flex w-full space-x-2">
+                <select
+                  className="select focus:outline-none"
+                  value={source}
+                  onChange={onSelectSource}
+                >
+                  <option value="auto">{t("langs.auto")}</option>
+                  {CommonLangCode.map((item) => (
+                    <option key={`source-${item}`} value={item}>
+                      {t(`langs.${item}`)}
+                    </option>
+                  ))}
+                </select>
 
-                {aiLoading && (
-                  <div className="loading loading-dots text-primary"></div>
-                )}
-
-                <div className="flex justify-between">
-                  <label className="label">
-                    <input
-                      type="checkbox"
-                      checked={showMd}
-                      onChange={onChangeShowMd}
-                      className="toggle toggle-primary"
-                    />
-                    Markdown
-                  </label>
-                  <button
-                    className="btn btn-ghost btn-primary"
-                    disabled={aiTranslatedText == ""}
-                    onClick={onCopyAi}
-                  >
-                    <RiFileCopyLine className="text-lg" />
-                  </button>
-                </div>
+                <button
+                  className="btn btn-ghost"
+                  onClick={onSwitchLang}
+                  disabled={source === "auto"}
+                >
+                  <GoArrowSwitch />
+                </button>
+                <select
+                  className="select focus:outline-none"
+                  value={target}
+                  onChange={onSelectTarget}
+                >
+                  {CommonLangCode.map((item) => (
+                    <option key={`target-${item}`} value={item}>
+                      {t(`langs.${item}`)}
+                    </option>
+                  ))}
+                </select>
               </div>
+              {!isUrl ? (
+                <button
+                  className="btn btn-outline btn-primary ml-2"
+                  onClick={onTranslate}
+                  disabled={!enableBtn}
+                >
+                  <MdOutlineTranslate className="text-2xl" />
+                </button>
+              ) : (
+                <button
+                  className="btn btn-outline btn-primary ml-2"
+                  onClick={onAiTranslate}
+                  disabled={!enableBtn || aiLoading}
+                >
+                  <MdOutlineTranslate className="text-lg" />
+                  AI
+                </button>
+              )}
             </div>
           </div>
-        )}
-        {!isUrl &&
-          translationData.map((item, index) => (
-            <div
-              className={`collapse collapse-arrow w-full bg-base-300 border-base-300 border`}
-              key={item.name}
-            >
-              <input
-                type="checkbox"
-                checked={item.display}
-                onChange={(e) => onDisplay(index)}
-              />
-              <div className="collapse-title bg-base-200">
-                <div className="flex items-center">
-                  <div className="w-20 flex justify-center">{item.logo}</div>
-                  <span
-                    className={`pl-2 text-base-content font-bold ${
-                      item.loading && "animate-bounce"
-                    }`}
-                  >
-                    {t(item.i18nName)}
-                  </span>
-                </div>
-              </div>
-              <div className="w-full collapse-content bg-base-100">
-                <div className="pt-2">
-                  {item.loading ? (
-                    <div className="loading loading-dots text-primary"></div>
-                  ) : (
-                    <div
-                      className="break-all max-h-40 overflow-y-auto "
-                      ref={(el: HTMLDivElement | null) => {
-                        translateTextRefs.current[index] = el;
-                      }}
-                    >
-                      {item.translatedText}
+          <div className="flex-1 max-w-[50%] p-4 space-y-2 overflow-y-auto hide-scrollbar">
+            {isUrl && (
+              <div
+                className={`collapse collapse-arrow collapse-open bg-base-300 border-base-300 border`}
+              >
+                <div className="collapse-title bg-base-200">
+                  <div className="flex items-center">
+                    <div className="w-20 flex justify-center">
+                      {translationData[0].logo}
                     </div>
-                  )}
-                  {aiLoading && (
-                    <div className="loading loading-dots text-primary"></div>
-                  )}
+                    <span className="pl-2 font-semibold">
+                      {t(translationData[0].i18nName)}
+                    </span>
+                  </div>
+                </div>
+                <div className="collapse-content bg-base-100 min-w-0">
+                  <div className="pt-2 w-full">
+                    {showMd ? (
+                      <div className="break-all max-h-40 w-full overflow-y-auto">
+                        <div className="pointer-events-none">
+                          <ReactMarkdown
+                            // 启用代码高亮
+                            rehypePlugins={[rehypeHighlight]}
+                            // 处理空内容
+                            children={aiTranslatedText || ""}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        className="break-all max-h-40 overflow-y-auto"
+                        ref={(el: HTMLDivElement | null) => {
+                          translateTextRefs.current[0] = el;
+                        }}
+                      >
+                        {aiTranslatedText}
+                      </div>
+                    )}
 
-                  <div className="flex justify-end">
-                    <button
-                      className="btn btn-ghost btn-primary"
-                      disabled={item.translatedText == ""}
-                      onClick={(e) => onCopy(index)}
-                    >
-                      <RiFileCopyLine className="text-lg" />
-                    </button>
+                    {aiLoading && (
+                      <div className="loading loading-dots text-primary"></div>
+                    )}
+
+                    <div className="flex justify-between">
+                      <label className="label">
+                        <input
+                          type="checkbox"
+                          checked={showMd}
+                          onChange={onChangeShowMd}
+                          className="toggle toggle-primary"
+                        />
+                        Markdown
+                      </label>
+                      <button
+                        className="btn btn-ghost btn-primary"
+                        disabled={aiTranslatedText == ""}
+                        onClick={onCopyAi}
+                      >
+                        <RiFileCopyLine className="text-lg" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
+            )}
+            {!isUrl &&
+              translationData.map((item, index) => (
+                <div
+                  className={`collapse collapse-arrow w-full bg-base-300 border-base-300 border`}
+                  key={item.name}
+                >
+                  <input
+                    type="checkbox"
+                    checked={item.display}
+                    onChange={(e) => onDisplay(index)}
+                  />
+                  <div className="collapse-title bg-base-200">
+                    <div className="flex items-center">
+                      <div className="w-20 flex justify-center">
+                        {item.logo}
+                      </div>
+                      <span
+                        className={`pl-2 text-base-content font-bold ${
+                          item.loading && "animate-bounce"
+                        }`}
+                      >
+                        {t(item.i18nName)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="w-full collapse-content bg-base-100">
+                    <div className="pt-2">
+                      {item.loading ? (
+                        <div className="loading loading-dots text-primary"></div>
+                      ) : (
+                        <div
+                          className="break-all max-h-40 overflow-y-auto "
+                          ref={(el: HTMLDivElement | null) => {
+                            translateTextRefs.current[index] = el;
+                          }}
+                        >
+                          {item.translatedText}
+                        </div>
+                      )}
+                      {aiLoading && (
+                        <div className="loading loading-dots text-primary"></div>
+                      )}
+
+                      <div className="flex justify-end">
+                        <button
+                          className="btn btn-ghost btn-primary"
+                          disabled={item.translatedText == ""}
+                          onClick={(e) => onCopy(index)}
+                        >
+                          <RiFileCopyLine className="text-lg" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </>
+      ) : (
+        <div className="hero ">
+          <div className="hero-content text-center">
+            <div className="max-w-md">
+              <p className="py-6">{t("translation.setting_guide")}</p>
+              <button className="btn btn-primary" onClick={onNagviteSetting}>
+                {t("translation.setting_tip")}
+              </button>
             </div>
-          ))}
-      </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

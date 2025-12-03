@@ -78,7 +78,9 @@
       "error": "Error.Try again or check configuration",
       "end": "Done, please paste the translation",
       "conflict": "Translation hotkey in use"
-    }
+    },
+    "setting_guide": "Internet or AI translation is not configured. Please set it up in settings.",
+    "setting_tip": "Configure Now"
   },
   "ai": {
     "provider": "Provider",

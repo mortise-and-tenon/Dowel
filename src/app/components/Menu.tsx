@@ -1,15 +1,13 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { ReactNode, useContext, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  MdOutlineSettings,
   MdOutlineHome,
+  MdOutlineSettings,
   MdOutlineTranslate,
 } from "react-icons/md";
-import { GlobalContext } from "../utils/providers/GlobalProvider";
-import React from "react";
-import { useTranslation } from "react-i18next";
 
 /**
  * 菜单定义
@@ -96,7 +94,7 @@ export default function Menu({
       setFocusExtraMenu(extraMenu.name);
       onChange(extraMenu.i18nName);
     }
-  }, []);
+  }, [path]);
 
   /**
    * 选中的菜单

@@ -62,3 +62,9 @@ pnpm tauri dev
 # 启动web版
 pnpm dev
 ```
+
+`tools` 目录了也提供了 windows 下的快捷 cmd 文件
+
+- `init.cmd` 安装依赖
+- `dev.cmd` 本地开发运行
+- `build.cmd` 本地编译、制作安装包

@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useContext, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import {
   MdOutlineInfo,
   MdOutlineSettings,
@@ -8,6 +8,7 @@ import {
 } from "react-icons/md";
 import { GlobalContext } from "../utils/providers/GlobalProvider";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "next/navigation";
 
 type SettingMenuData = {
   name: string;
@@ -56,6 +57,18 @@ export default function SettingMenu({
 }) {
   const { t } = useTranslation();
   const [focusMenu, setFocusMenu] = useState("translation");
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const menuName = searchParams.get("menu");
+    if (menuName) {
+      const menu = menuDatas.find((item) => item.name === menuName);
+      if (menu) {
+        onClickMenu(menuName);
+      }
+    }
+  }, []);
 
   /**
    * 点击设置菜单项

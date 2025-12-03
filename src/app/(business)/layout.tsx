@@ -1,6 +1,7 @@
 "use client";
 import { getCurrentWindow, Window } from "@tauri-apps/api/window";
 import { useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   VscChromeClose,
   VscChromeMaximize,
@@ -11,7 +12,6 @@ import Menu from "../components/Menu";
 import ThemeChanger from "../components/ThemeSwitcher";
 import "../globals.css";
 import { GlobalContext } from "../utils/providers/GlobalProvider";
-import { useTranslation } from "react-i18next";
 
 export default function HomeLayout({
   children,
