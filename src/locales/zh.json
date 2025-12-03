@@ -10,6 +10,7 @@
   "menu": {
     "home": "首页",
     "translation": "翻译",
+    "help": "帮助",
     "setting": "设置"
   },
   "tray": {

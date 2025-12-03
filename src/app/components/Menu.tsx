@@ -4,10 +4,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  MdOutlineHelpOutline,
   MdOutlineHome,
   MdOutlineSettings,
   MdOutlineTranslate,
 } from "react-icons/md";
+import { open } from "@tauri-apps/plugin-shell";
 
 /**
  * 菜单定义
@@ -32,6 +34,11 @@ type MenuData = {
    * 菜单跳转链接
    */
   link: string;
+
+  /**
+   * 是否外链
+   */
+  extra?: boolean;
 };
 
 /**
@@ -61,6 +68,13 @@ const extraMenuDatas: MenuData[] = [
     icon: <MdOutlineSettings className="text-2xl" />,
     i18nName: "menu.setting",
     link: "/setting",
+  },
+  {
+    name: "help",
+    icon: <MdOutlineHelpOutline className="text-2xl" />,
+    i18nName: "menu.help",
+    link: "https://dowel.mortnon.tech/docs/intro",
+    extra: true,
   },
 ];
 
@@ -123,17 +137,26 @@ export default function Menu({
    * 扩展菜单选择，与菜单互斥
    * @param name
    */
-  const onExtraMenuSelected = (
+  const onExtraMenuSelected = async (
     name: string,
     i18nName: string,
-    link: string
+    link: string,
+    extra: boolean
   ) => {
-    if (focusMenu != "") {
-      setFocusMenu("");
+    if (extra) {
+      try {
+        await open(link);
+      } catch (error) {
+        console.error("open url fail:", error);
+      }
+    } else {
+      if (focusMenu != "") {
+        setFocusMenu("");
+      }
+      setFocusExtraMenu(name);
+      onChange(i18nName);
+      router.push(link);
     }
-    setFocusExtraMenu(name);
-    onChange(i18nName);
-    router.push(link);
   };
 
   return (
@@ -162,7 +185,12 @@ export default function Menu({
         {extraMenuDatas.map((item) => (
           <li
             onClick={() =>
-              onExtraMenuSelected(item.name, item.i18nName, item.link)
+              onExtraMenuSelected(
+                item.name,
+                item.i18nName,
+                item.link,
+                item.extra
+              )
             }
             key={item.name}
           >

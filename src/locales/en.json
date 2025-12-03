@@ -10,6 +10,7 @@
   "menu": {
     "home": "Home",
     "translation": "Translation",
+    "help": "help",
     "setting": "Setting"
   },
   "tray": {
