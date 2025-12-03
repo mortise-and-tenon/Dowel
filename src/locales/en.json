@@ -84,6 +84,7 @@
     "provider": "Provider",
     "select_provider": "Select Provider",
     "search_provider": "Search Provider",
+    "no_data": "No data configured",
     "add_provider": "Add Provider",
     "name": "Name",
     "name_placeholder": "Enter Provider Name",

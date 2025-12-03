@@ -84,6 +84,7 @@
     "provider": "供应商",
     "select_provider": "选择供应商",
     "search_provider": "搜索供应商",
+    "no_data": "未配置数据",
     "add_provider": "添加供应商",
     "name": "名称",
     "name_placeholder": "输入供应商名称",

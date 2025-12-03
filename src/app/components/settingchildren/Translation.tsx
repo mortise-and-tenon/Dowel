@@ -152,6 +152,11 @@ export default function Translation() {
         return { ...a, api: "", key: "", secret: "", on: false };
       });
       setTranslationConfigData(resultData);
+    } else {
+      const resultData = DefaultTranslations.map((a: TranslationProvider) => {
+        return { ...a, api: "", key: "", secret: "", on: false };
+      });
+      setTranslationConfigData(resultData);
     }
   };
 

@@ -29,6 +29,11 @@ export default function Ai() {
   const [providers, setProviders] = useState<ProviderData[]>([]);
 
   /**
+   * 加载数据状态
+   */
+  const [loading, setLoading] = useState(false);
+
+  /**
    * 选中的供应商
    */
   const [focusProvider, setFocusProvider] = useState<ProviderData>();
@@ -99,11 +104,13 @@ export default function Ai() {
    * 读取所有供应商数据
    */
   const readProviders = async () => {
+    setLoading(true);
     const data = await adapter.readProviders();
     setProviders(data);
     if (!focusProvider) {
       setFocusProvider(data[0]);
     }
+    setLoading(false);
   };
 
   /**
@@ -307,9 +314,13 @@ export default function Ai() {
           <MdOutlineSearch className="text-2xl" />
         </label>
         <div className="flex-1 min-h-0 w-full overflow-y-auto hide-scrollbar">
-          {providers.length == 0 ? (
+          {loading ? (
             <div className="flex justify-center pt-4">
               <span className="loading loading-dots loading-md"></span>
+            </div>
+          ) : providers.length == 0 ? (
+            <div className="flex justify-center pt-4 text-sm">
+              {t("ai.no_data")}
             </div>
           ) : (
             <ul className="menu w-full px-0">
