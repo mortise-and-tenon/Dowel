@@ -1,6 +1,9 @@
 "use client";
 
-import { DefaultTranslations } from "@/app/utils/translations/translationInferace";
+import {
+  DefaultTranslations,
+  TranslationProvider,
+} from "@/app/utils/translations/translationInferace";
 import { TauriAdapter, TranslationData } from "@/app/utils/utils";
 import { ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -71,6 +74,17 @@ export default function Main() {
           return null;
         })
         .filter((item) => item != null);
+    } else {
+      resultData = DefaultTranslations.map((a: TranslationProvider) => {
+        return {
+          name: a.name,
+          i18nName: a.i18nName,
+          logo: a.logo,
+          on: a.on,
+          limit: a.limit ? a.limit : 0,
+          used: 0,
+        };
+      });
     }
 
     setTranslations(resultData);
