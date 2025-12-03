@@ -81,7 +81,7 @@ export default function General() {
     },
     {
       name: "themes.night",
-      value: "ngiht",
+      value: "night",
     },
     {
       name: "themes.coffee",
