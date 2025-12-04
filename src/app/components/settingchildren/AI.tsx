@@ -277,6 +277,13 @@ export default function Ai() {
         success: false,
         msg: "http.fail",
       });
+    } finally {
+      setTimeout(() => {
+        setCheckResult({
+          success: true,
+          msg: "",
+        });
+      }, 3000);
     }
   };
 
@@ -297,9 +304,33 @@ export default function Ai() {
         on: toggleState,
       };
       try {
-        await adapter.writeProviderData(provider);
+        const result = await adapter.writeProviderData(provider);
+        if (result) {
+          setCheckResult({
+            success: true,
+            msg: "common.ok_tip",
+          });
+        } else {
+          setCheckResult({
+            success: true,
+            msg: "common.fail_tip",
+          });
+        }
+
         await readProviders();
-      } catch (error) {}
+      } catch (error) {
+        setCheckResult({
+          success: false,
+          msg: "common.fail_tip",
+        });
+      } finally {
+        setTimeout(() => {
+          setCheckResult({
+            success: true,
+            msg: "",
+          });
+        }, 3000);
+      }
     }
   };
 

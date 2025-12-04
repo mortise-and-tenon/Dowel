@@ -40,6 +40,7 @@ import {
 import { RiListSettingsLine, RiResetLeftFill } from "react-icons/ri";
 import ExternalLink from "../ExternalLink";
 import HotKeyInput from "../HotKeyInput";
+import { FaCircleCheck } from "react-icons/fa6";
 
 /**
  * 默认英文的AI翻译提示词
@@ -506,13 +507,30 @@ export default function Translation() {
   };
 
   /**
+   * 是否展示提示
+   */
+  const [showTip, setShowTip] = useState(false);
+
+  /**
+   * 提示成功/失败
+   */
+  const [tipStatus, setTipStauts] = useState(true);
+
+  /**
    * 保存ai配置
    */
   const onSaveAi = async () => {
     try {
-      await adapter.writeAiData(ai);
+      const result = await adapter.writeAiData(ai);
+      setTipStauts(result);
     } catch (error) {
       console.log("save ai:" + error);
+      setTipStauts(false);
+    } finally {
+      setShowTip(true);
+      setTimeout(() => {
+        setShowTip(false);
+      }, 3000);
     }
   };
 
@@ -782,6 +800,21 @@ export default function Translation() {
           </div>
         </label>
         <div className="tab-content bg-base-100 border-base-300 p-6 overflow-y-auto hide-scrollbar">
+          {showTip && (
+            <div
+              role="alert"
+              className={`alert ${tipStatus ? "alert-success" : "alert-error"}`}
+            >
+              {tipStatus ? (
+                <FaCircleCheck className="text-2xl" />
+              ) : (
+                <FaTimesCircle className="text-2xl" />
+              )}
+              <span>
+                {tipStatus ? t("common.ok_tip") : t("common.fail_tip")}
+              </span>
+            </div>
+          )}
           <div className="flex justify-end items-center pb-4">
             <div
               className="tooltip tooltip-left"
@@ -833,7 +866,7 @@ export default function Translation() {
               onClick={onSaveAi}
               disabled={!enabledBtn}
             >
-              {t("common.confirm")}
+              {t("common.save")}
             </button>
           </div>
           <div className="pt-4">

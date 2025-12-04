@@ -24,7 +24,9 @@
     "save": "Save",
     "enable": "Enable",
     "disable": "Disable",
-    "reset": "Reset"
+    "reset": "Reset",
+    "ok_tip": "Success",
+    "fail_tip": "Failed"
   },
   "setting": {
     "translation": "Translation Settings",
