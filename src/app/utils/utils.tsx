@@ -387,6 +387,12 @@ export class TauriAdapter implements PlatformAdapter {
           : oldAi.web_selector,
         on: aiData.on != undefined ? aiData.on : false,
       };
+    } else {
+      // 不存在同名配置，添加新配置
+      if (configFile.ai == null || configFile.ai == undefined) {
+        configFile.ai = [];
+      }
+      configFile.ai.push(aiData);
     }
 
     return await this.writeConfigFile(configFile);

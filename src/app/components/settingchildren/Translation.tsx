@@ -511,7 +511,9 @@ export default function Translation() {
   const onSaveAi = async () => {
     try {
       await adapter.writeAiData(ai);
-    } catch (error) {}
+    } catch (error) {
+      console.log("save ai:" + error);
+    }
   };
 
   /**
@@ -826,6 +828,13 @@ export default function Translation() {
                 ))}
               </select>
             </label>
+            <button
+              className="btn btn-primary"
+              onClick={onSaveAi}
+              disabled={!enabledBtn}
+            >
+              {t("common.confirm")}
+            </button>
           </div>
           <div className="pt-4">
             <div className="flex justify-between mb-2">
@@ -943,15 +952,6 @@ export default function Translation() {
                 />
               </label>
             </div>
-          </div>
-          <div className="flex justify-end mt-4">
-            <button
-              className="btn btn-primary"
-              onClick={onSaveAi}
-              disabled={!enabledBtn}
-            >
-              {t("common.confirm")}
-            </button>
           </div>
         </div>
 

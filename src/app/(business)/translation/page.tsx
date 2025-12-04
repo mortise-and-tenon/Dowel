@@ -291,6 +291,10 @@ export default function Translation() {
   const onCopyAi = async () => {
     try {
       await navigator.clipboard.writeText(aiTranslatedText);
+      setCopyTextId(0);
+      setTimeout(() => {
+        setCopyTextId(-1);
+      }, 1000);
     } catch (err) {
       console.error(`复制失败:`, err);
     }
@@ -455,7 +459,7 @@ export default function Translation() {
                 <button
                   className="btn btn-outline btn-primary ml-2"
                   onClick={onAiTranslate}
-                  disabled={!enableBtn || aiLoading}
+                  disabled={!enableBtn || aiLoading || !translationData[0].ai}
                 >
                   <MdOutlineTranslate className="text-lg" />
                   AI
@@ -464,9 +468,10 @@ export default function Translation() {
             </div>
           </div>
           <div className="flex-1 max-w-[50%] p-4 space-y-2 overflow-y-auto hide-scrollbar">
-            {isUrl && (
+            {isUrl && translationData[0].ai && (
               <div
                 className={`collapse collapse-arrow collapse-open bg-base-300 border-base-300 border`}
+                key={translationData[0].name}
               >
                 <div className="collapse-title bg-base-200">
                   <div className="flex items-center">
@@ -521,9 +526,28 @@ export default function Translation() {
                         disabled={aiTranslatedText == ""}
                         onClick={onCopyAi}
                       >
-                        <RiFileCopyLine className="text-lg" />
+                        {copyTextId == 0 ? (
+                          <MdCheck className="text-lg" />
+                        ) : (
+                          <RiFileCopyLine className="text-lg" />
+                        )}
                       </button>
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            {isUrl && !translationData[0].ai && (
+              <div className="hero ">
+                <div className="hero-content text-center">
+                  <div className="max-w-md">
+                    <p className="py-6">{t("translation.setting_ai_guide")}</p>
+                    <button
+                      className="btn btn-primary"
+                      onClick={onNagviteSetting}
+                    >
+                      {t("translation.setting_tip")}
+                    </button>
                   </div>
                 </div>
               </div>

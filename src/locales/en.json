@@ -83,7 +83,8 @@
       "conflict": "Translation hotkey in use."
     },
     "setting_guide": "Internet or AI translation is not configured. Please set it up in settings.",
-    "setting_tip": "Configure Now"
+    "setting_tip": "Configure Now",
+    "setting_ai_guide": "AI translation not configured. Unable to use web translation. Please configure in settings."
   },
   "ai": {
     "provider": "Provider",

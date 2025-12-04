@@ -83,7 +83,8 @@
       "conflict": "翻译热键已被占用。"
     },
     "setting_guide": "暂未配置互联网翻译或 AI 翻译。请在设置中进行配置。",
-    "setting_tip": "立即配置"
+    "setting_tip": "立即配置",
+    "setting_ai_guide": "未配置 AI 翻译，无法使用网页翻译。请在设置中进行配置。"
   },
   "ai": {
     "provider": "供应商",
