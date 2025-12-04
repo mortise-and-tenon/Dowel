@@ -189,7 +189,7 @@ export default function Menu({
                 item.name,
                 item.i18nName,
                 item.link,
-                item.extra
+                item.extra ? item.extra : false
               )
             }
             key={item.name}
