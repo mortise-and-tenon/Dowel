@@ -14,7 +14,7 @@ import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { GoArrowSwitch } from "react-icons/go";
-import { MdAutoAwesome, MdOutlineTranslate } from "react-icons/md";
+import { MdAutoAwesome, MdCheck, MdOutlineTranslate } from "react-icons/md";
 import { RiFileCopyLine } from "react-icons/ri";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
@@ -257,6 +257,9 @@ export default function Translation() {
 
   const translateTextRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
+  //点击的复制按钮的id，有于变换图标
+  const [copyTextId, setCopyTextId] = useState(-1);
+
   /**
    * 复制指定的译文
    * @param itemId
@@ -273,6 +276,10 @@ export default function Translation() {
       if (!textToCopy.trim()) throw new Error("内容为空");
 
       await navigator.clipboard.writeText(textToCopy);
+      setCopyTextId(itemId);
+      setTimeout(() => {
+        setCopyTextId(-1);
+      }, 1000);
     } catch (err) {
       console.error(`复制 id=${itemId} 失败:`, err);
     }
@@ -570,7 +577,11 @@ export default function Translation() {
                           disabled={item.translatedText == ""}
                           onClick={(e) => onCopy(index)}
                         >
-                          <RiFileCopyLine className="text-lg" />
+                          {copyTextId == index ? (
+                            <MdCheck className="text-lg" />
+                          ) : (
+                            <RiFileCopyLine className="text-lg" />
+                          )}
                         </button>
                       </div>
                     </div>

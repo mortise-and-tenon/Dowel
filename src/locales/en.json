@@ -4,7 +4,7 @@
     "en": "English"
   },
   "app_name": "Dowel",
-  "app_desc": "A concise and efficient AI application platform",
+  "app_desc": "A concise and efficient AI Agent platform",
   "corp_name": "Truss Web",
   "copyright": "Copyright",
   "menu": {
@@ -69,16 +69,18 @@
     "web_selector": "Selector",
     "selector_tip": "CSS selector to select the range of Html content to translate.",
     "hotkey": "Hotkey for Translation",
+    "hotkey_register": "Hotkey registered successfully.",
+    "config_provider": "Enable internet or AI translation first.",
     "clear": "Clear",
     "register": "Register",
     "lang": "Language",
     "press_btn": "Press keys...",
     "click_keys": "Click to Settings",
     "clipboard": {
-      "start": "Start translating",
-      "error": "Error.Try again or check configuration",
-      "end": "Done, please paste the translation",
-      "conflict": "Translation hotkey in use"
+      "start": "Start translating.",
+      "error": "Error.Try again or check configuration.",
+      "end": "Done, please paste the translation.",
+      "conflict": "Translation hotkey in use."
     },
     "setting_guide": "Internet or AI translation is not configured. Please set it up in settings.",
     "setting_tip": "Configure Now"

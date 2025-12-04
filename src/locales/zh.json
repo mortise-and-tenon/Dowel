@@ -4,7 +4,7 @@
     "en": "English"
   },
   "app_name": "道沃",
-  "app_desc": "简洁高效的 AI 应用平台",
+  "app_desc": "简洁高效的 AI 智能体平台",
   "corp_name": "Truss Web",
   "copyright": "版权所有",
   "menu": {
@@ -69,16 +69,18 @@
     "web_selector": "标签选择器",
     "selector_tip": "CSS选择器，用于选择要翻译的Html内容范围",
     "hotkey": "翻译热键",
+    "hotkey_register": "热键注册成功",
+    "config_provider": "请先启用互联网翻译或AI翻译",
     "clear": "清除",
     "register": "注册",
     "lang": "翻译语言",
     "press_btn": "按下按键……",
     "click_keys": "点击设置",
     "clipboard": {
-      "start": "开始翻译剪贴板内容",
-      "error": "翻译出错，请重试或检查配置",
-      "end": "翻译结束，请粘贴译文",
-      "conflict": "翻译热键已被占用"
+      "start": "开始翻译剪贴板内容。",
+      "error": "翻译出错，请重试或检查配置。",
+      "end": "翻译结束，请粘贴译文。",
+      "conflict": "翻译热键已被占用。"
     },
     "setting_guide": "暂未配置互联网翻译或 AI 翻译。请在设置中进行配置。",
     "setting_tip": "立即配置"

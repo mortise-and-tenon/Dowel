@@ -7,7 +7,7 @@ import {
 /**
  * 展示通知
  */
-export async function showNotification(msg: string) {
+export async function showNotification(title: string, msg: string) {
   let permissionGranted = await isPermissionGranted();
 
   if (!permissionGranted) {
@@ -16,7 +16,7 @@ export async function showNotification(msg: string) {
   }
 
   if (permissionGranted) {
-    sendNotification({ title: "Dowel", body: msg });
+    sendNotification({ title, body: msg });
   } else {
   }
 }

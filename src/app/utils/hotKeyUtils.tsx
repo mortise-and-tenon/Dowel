@@ -37,11 +37,30 @@ export async function unregisterHotkey(hotkey: string) {
 
 const adapter = new TauriAdapter();
 
+let isRunning = false;
+let lastExecutionTime = 0;
+const EXECUTION_COOLDOWN = 500;
+
 export async function onHotKeyTranslation() {
+  if (isRunning) {
+    console.log("正在翻译中");
+    return;
+  }
+
+  const now = Date.now();
+
+  if (now - lastExecutionTime < EXECUTION_COOLDOWN) {
+    console.log("冷却时间内，跳过");
+    return;
+  }
+
   //读取剪贴板内容用于翻译
   const originalText = await readText();
 
-  showNotification(i18n.t("translation.clipboard.start"));
+  showNotification(
+    i18n.t("menu.translation"),
+    i18n.t("translation.clipboard.start")
+  );
 
   const aiUtils = new AiUtils();
   const aiData = await adapter.readAiData("translation");
@@ -65,11 +84,19 @@ export async function onHotKeyTranslation() {
           }
         });
       await writeText(result);
-      showNotification(i18n.t("translation.clipboard.end"));
+      showNotification(
+        i18n.t("menu.translation"),
+        i18n.t("translation.clipboard.end")
+      );
       return;
     } catch (error) {
       console.error("ai translate error:", error);
-      await showNotification(i18n.t("translation.clipboard.error"));
+      await showNotification(
+        i18n.t("menu.translation"),
+        i18n.t("translation.clipboard.error")
+      );
+    } finally {
+      isRunning = false;
       return;
     }
   }
@@ -83,10 +110,23 @@ export async function onHotKeyTranslation() {
         .translate(originalText, "auto", locale)
         .then((result) => result.translated);
       await writeText(result);
-      showNotification(i18n.t("translation.clipboard.end"));
+      showNotification(
+        i18n.t("menu.translation"),
+        i18n.t("translation.clipboard.end")
+      );
     } catch (error) {
       console.error("common translate error:", error);
-      await showNotification(i18n.t("translation.clipboard.error"));
+      await showNotification(
+        i18n.t("menu.translation"),
+        i18n.t("translation.clipboard.error")
+      );
+    } finally {
+      isRunning = false;
     }
+  } else {
+    await showNotification(
+      i18n.t("menu.translation"),
+      i18n.t("translation.config_provider")
+    );
   }
 }

@@ -42,7 +42,7 @@ export default function Home() {
     });
 
     if (!result) {
-      showNotification(i18n.t("translation.clipboard.conflict"));
+      console.log("热键已注册");
     }
   };
 

@@ -554,9 +554,12 @@ export default function Translation() {
 
     if (result) {
       await adapter.writeTranslationConfig(translationConfig);
-      showNotification("注册热键成功");
+      showNotification(t("menu.translation"), t("translation.hotkey_register"));
     } else {
-      showNotification("热键已被占用");
+      showNotification(
+        t("menu.translation"),
+        t("translation.clipboard.conflict")
+      );
     }
   };
 
