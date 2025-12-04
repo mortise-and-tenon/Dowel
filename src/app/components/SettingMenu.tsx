@@ -9,6 +9,7 @@ import {
 import { GlobalContext } from "../utils/providers/GlobalProvider";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "next/navigation";
+import { FaBrain } from "react-icons/fa";
 
 type SettingMenuData = {
   name: string;
@@ -32,7 +33,7 @@ const menuDatas: SettingMenuData[] = [
   // },
   {
     name: "ai",
-    icon: <MdOutlineSettings className="text-xl" />,
+    icon: <FaBrain className="text-xl" />,
     i18nName: "setting.ai",
   },
   {

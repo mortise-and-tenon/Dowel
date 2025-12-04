@@ -108,7 +108,7 @@ export default function Ai() {
     const data = await adapter.readProviders();
     setProviders(data);
     if (!focusProvider) {
-      setFocusProvider(data[0]);
+      onClickModel(data[0]);
     }
     setLoading(false);
   };
@@ -119,9 +119,11 @@ export default function Ai() {
    */
   const onClickModel = (item: ProviderData) => {
     setFocusProvider(item);
-    setNewApi(item.api ? item.api : "");
-    setNewKey(item.key ? item.key : "");
-    setToggleState(item.on ? item.on : false);
+    if (item) {
+      setNewApi(item.api ? item.api : "");
+      setNewKey(item.key ? item.key : "");
+      setToggleState(item.on ? item.on : false);
+    }
   };
 
   /**
